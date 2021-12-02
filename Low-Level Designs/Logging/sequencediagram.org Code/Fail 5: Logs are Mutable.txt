@@ -5,7 +5,7 @@ participant "logWriter : LogWriter" as writer
 participant "dataAccess : SQLDataAccess" as dao
 participant "SQL Server" as db
 
-note over db:The data store is online, accessible to the system,\nand has storage capacity for a log entry. 
+note over db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nUser can call an UPDATE statement\nover the table containing the entry being inserted.
 #instantiation/constructors
 activate control
 control->*dao:new SQLDataAccess()
@@ -27,11 +27,10 @@ activate dao
 #inbound request to show that the log writing is asynchronous
 [->control:request
 #SQL statement detailed enough? too detailed?
-dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)
+dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)\n    OUTPUT INSERTED.*
 activate db
-note over db:User can call an UPDATE statement\nover the table containing the entry being inserted.
 control-->[:response
-db-->dao:1 line changed in database
+db-->dao:Inserted row
 deactivate db
 dao-->writer: 1 : int
 deactivate dao
