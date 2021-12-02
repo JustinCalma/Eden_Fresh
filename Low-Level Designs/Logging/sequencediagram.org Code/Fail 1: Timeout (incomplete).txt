@@ -27,7 +27,7 @@ activate dao
 #inbound request to show that the log writing is asynchronous
 [->control:request
 #SQL statement detailed enough? too detailed?
-dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)
+dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)\n    OUTPUT INSERTED.*
 activate db
 control-->[:response
 db-->dao:Inserted row
