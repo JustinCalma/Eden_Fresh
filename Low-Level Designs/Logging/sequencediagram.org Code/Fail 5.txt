@@ -1,11 +1,11 @@
-title Logging Success Scenario
+title Logging Fail - Logs Are Mutable
 
 participant "mainControl : Control" as control
 participant "logWriter : LogWriter" as writer
 participant "logGateway : SQLLogGateway" as dao
 participant "SQL Server" as db
 
-note over db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nNo users can call an UPDATE statement\nover the table containing the entry being inserted.
+note over db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nUser is able to call an UPDATE statement\nover the table containing the entry being inserted.
 #instantiation/constructors
 activate control
 control->*dao:new SQLLogGateway()

@@ -1,4 +1,4 @@
-title Logging Success Scenario
+title Logging Fail - Inaccurate Save
 
 participant "mainControl : Control" as control
 participant "logWriter : LogWriter" as writer
@@ -32,8 +32,13 @@ activate db
 control-->[:response
 db-->dao:Inserted row
 deactivate db
-dao-->writer: 1 : int
+note over dao:Returned row attributes do not match the arguments to writeLogs().
+dao->db:DELETE FROM tablename WHERE...
+activate db
+db-->dao: 1 row deleted
+deactivate db
+dao-->writer: 0 : int
 deactivate dao
-writer-->>control: true : boolean
+writer-->>control: false : boolean
 deactivate writer
 deactivate control

@@ -1,4 +1,4 @@
-title Logging Success Scenario
+title Logging Fail - Did Not Save
 
 participant "mainControl : Control" as control
 participant "logWriter : LogWriter" as writer
@@ -27,13 +27,12 @@ activate dao
 #inbound request to show that the log writing is asynchronous
 [->control:request
 #SQL statement detailed enough? too detailed?
-dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)\n    OUTPUT INSERTED.*
+dao-xdb:INSERT INTO tablename VALUES (userID, timedate, level, category, message)\n    OUTPUT INSERTED.*
 activate db
 control-->[:response
-db-->dao:Inserted row
 deactivate db
-dao-->writer: 1 : int
+dao-->writer: 0 : int
 deactivate dao
-writer-->>control: true : boolean
+writer-->>control: false : boolean
 deactivate writer
 deactivate control

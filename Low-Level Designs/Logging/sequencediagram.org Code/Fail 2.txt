@@ -1,4 +1,4 @@
-title Logging Success Scenario
+title Logging Fail - User Blocked
 
 participant "mainControl : Control" as control
 participant "logWriter : LogWriter" as writer
@@ -19,21 +19,20 @@ writer->writer:Constructor
 writer-->control:LogWriter instance
 deactivate writer
 #functionality method calls
-control->>writer: logWriter.write(userID : int, logLevel : enum, category : enum, message : String)
+control->writer: logWriter.write(userID : int, logLevel : enum, category : enum, message : String)
 activate writer
 note over writer: System-initiated logs have a userID 0.\nUser-initiated logs have a userID equal to the initiating user's ID.
 writer->dao:logConnection.writeLogs(userID : int, level : enum, category : enum, message : string)
 activate dao
 #inbound request to show that the log writing is asynchronous
-[->control:request
+[-xcontrol:request
 #SQL statement detailed enough? too detailed?
 dao->db:INSERT INTO tablename VALUES (userID, timedate, level, category, message)\n    OUTPUT INSERTED.*
 activate db
-control-->[:response
 db-->dao:Inserted row
 deactivate db
 dao-->writer: 1 : int
 deactivate dao
-writer-->>control: true : boolean
+writer-->control: true : boolean
 deactivate writer
 deactivate control

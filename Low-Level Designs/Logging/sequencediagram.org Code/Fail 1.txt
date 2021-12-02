@@ -1,4 +1,4 @@
-title Logging Success Scenario
+title Logging Fail - Timeout
 
 participant "mainControl : Control" as control
 participant "logWriter : LogWriter" as writer
