@@ -1,0 +1,54 @@
+title User Management Success Scenario - Bulk Operations
+
+participant "System Administrator" as admin
+participant "User Management: UI" as ui
+participant "User Management : Controller" as control
+participant "User Management : Service" as service
+participant "User Management : SQL DAO" as umDAO
+participant "User Management : SQL DB" as umStore
+
+# Determine whether instantiating a UI object is needed
+activate control
+control->ui : new umUI()
+activate ui
+ui->ui : Constructor
+ui-->control : umUI Instance
+deactivate ui
+
+control->umDAO : new umDAO()
+activate umDAO
+umDAO->umDAO : Constructor
+umDAO-->control : umDAO Instance
+deactivate umDAO
+
+control->service : new umService(umDAO) 
+activate service
+service->service : Constructor
+service-->control : umService Instance
+deactivate service
+
+control->ui : ui.getUserInput()
+activate ui
+ui->admin : Show prompt to the user
+activate admin
+admin-->ui : User attempts to select their desired operation
+deactivate admin
+
+ui-->control : request : file extract
+deactivate ui
+control->control : Validate input (request : file extract)
+
+control->service : umService.determineOperation()
+activate service
+
+#Still need to put exact arguments
+service->umDAO : umDAO.writeToDataStore(args)
+activate umDAO
+umDAO->umStore : INSERT ...
+activate umStore
+umStore-->umDAO : int : change = X (X line(s) changed in SQL DB)
+deactivate umStore
+umDAO-->service : int change = X
+deactivate umDAO
+service-->control : true
+deactivate service

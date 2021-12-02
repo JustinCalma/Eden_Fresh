@@ -1,0 +1,52 @@
+title User Management Success Scenario - Update Account
+
+participant "System Administrator" as admin
+participant "User Management: UI" as ui
+participant "User Management : Controller" as control
+participant "User Management : Service" as service
+participant "User Management : SQL DAO" as umDAO
+participant "User Management : SQL DB" as umStore
+
+
+activate control
+control->ui : new umUI()
+activate ui
+ui->ui : Constructor
+ui-->control : umUI Instance
+deactivate ui
+
+control->umDAO : new umDAO()
+activate umDAO
+umDAO->umDAO : Constructor
+umDAO-->control : umDAO Instance
+deactivate umDAO
+
+control->service : new umService(umDAO) 
+activate service
+service->service : Constructor
+service-->control : umService Instance
+deactivate service
+
+control->ui : ui.getUserInput()
+activate ui
+ui->admin : Show prompt to the user
+activate admin
+admin-->ui : User attempts to select their desired operation
+deactivate admin
+
+ui-->control : User has selected "Update User"
+deactivate ui
+control->control : Validate input
+
+control->service : umService.updateUser()
+activate service
+service->umDAO : umDAO.writeToDataStore(args)
+activate umDAO
+umDAO->umStore : UPDATE ...
+activate umStore
+umStore-->umDAO : int : change = 1 (1 line changed in SQL DB)
+deactivate umStore
+umDAO-->service : int : change = 1
+deactivate umDAO
+service-->control : true
+deactivate service
