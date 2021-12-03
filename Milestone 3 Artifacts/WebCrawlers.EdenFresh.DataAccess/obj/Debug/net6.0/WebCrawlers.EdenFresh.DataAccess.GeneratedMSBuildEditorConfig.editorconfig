@@ -6,5 +6,5 @@ build_property.ProjectTypeGuids =
 build_property.InvariantGlobalization = 
 build_property.PlatformNeutralAssembly = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
-build_property.RootNamespace = WebCrawlers.EdenFresh.Logging
-build_property.ProjectDir = C:\Users\6500\source\repos\JustinCalma\Eden_Fresh\Milestone 3 Artifacts\WebCrawlers.EdenFresh.Logging\
+build_property.RootNamespace = WebCrawlers.EdenFresh.DataAccess
+build_property.ProjectDir = C:\Users\6500\source\repos\JustinCalma\Eden_Fresh\Milestone 3 Artifacts\WebCrawlers.EdenFresh.DataAccess\
