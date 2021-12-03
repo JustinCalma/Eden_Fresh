@@ -18,14 +18,19 @@ namespace EdenFresh
             {
                 SqlConnection con = new SqlConnection(connectionString);
 
-                string query = "INSERT INTO Users (UserId, FirstName, LastName, Username, Password, Email) VALUES (@id, @firstN, @lastN, @userN, @pass, @email)";
+                string query = "INSERT INTO Users (UserId, FirstName, LastName, Password, Email, Address, City, State, Zipcode) VALUES (@id, @firstN, @lastN, @pass, @email, @address, @city, @state, @zipcode)";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@id", user.userId);
                 cmd.Parameters.AddWithValue("@firstN", user.firstName);
                 cmd.Parameters.AddWithValue("@lastN", user.lastName);
-                cmd.Parameters.AddWithValue("@userN", user.username);
                 cmd.Parameters.AddWithValue("@pass", user.password);
                 cmd.Parameters.AddWithValue("@email", user.email);
+                cmd.Parameters.AddWithValue("@address", user.address);
+                cmd.Parameters.AddWithValue("@city", user.city);
+                cmd.Parameters.AddWithValue("@state", user.state);
+                cmd.Parameters.AddWithValue("@zipcode", user.zipcode);
+
+
                 try
                 {
                     con.Open();
@@ -188,14 +193,17 @@ namespace EdenFresh
 
                 SqlConnection con = new SqlConnection(connectionString);
 
-                string query = "UPDATE Users SET FirstName = @firstN, LastName = @lastN, Username = @userN, password = @pass, email = @email WHERE UserId = @id";
+                string query = "UPDATE Users SET FirstName = @firstN, LastName = @lastN, Password = @pass, Email = @email, Address = @address, City = @city, State = @state, Zipcode = @zipcode WHERE UserId = @id";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@id", user.userId);
                 cmd.Parameters.AddWithValue("@firstN", user.firstName);
                 cmd.Parameters.AddWithValue("@lastN", user.lastName);
-                cmd.Parameters.AddWithValue("@userN", user.username);
                 cmd.Parameters.AddWithValue("@pass", user.password);
                 cmd.Parameters.AddWithValue("@email", user.email);
+                cmd.Parameters.AddWithValue("@address", user.address);
+                cmd.Parameters.AddWithValue("@city", user.city);
+                cmd.Parameters.AddWithValue("@state", user.state);
+                cmd.Parameters.AddWithValue("@zipcode", user.zipcode);
                 try
                 {
                     con.Open();
