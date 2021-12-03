@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "e91e2d4d-8fd3-4cdd-abd8-2f441dcc9100": {
+      "ProjectGuid": "e91e2d4d-8fd3-4cdd-abd8-2f441dcc9100",
+      "DisplayName": "WebCrawlers.EdenFresh.Logging",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}
