@@ -1,6 +1,6 @@
 title Archiving Success Scenario
 
-participant "mainControl : MainController" as control
+participant "archivingManager : ArchivingManager" as control
 participant "archivingService : ArchivingService" as service
 participant "logGateway : SQLLogGateway" as reader
 participant "SQL Server" as logs
@@ -26,7 +26,7 @@ service-->control:ArchivingService instance
 deactivate service
 #Methods Begin
 control->>control:waitForArchive()
-note over control:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method. 
+note right of control:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method. 
 control->service:archivingService.archiveData(minimumAge : int, tableName : String)
 activate service
 service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
