@@ -9,37 +9,41 @@ participant "Web Host File System" as archive
 
 #Instantiations (Dependency injection)
 activate control
-control->reader:new SQLLogGateway(String serverConnectionString)
+control->*reader:new SQLLogGateway(String serverConnectionString)
 activate reader
 reader->reader:Constructor
 reader-->control:SQLLogGateway instance
 deactivate reader
-control->writer:new CompressingFileSystemLogGateway(String fileLocation)
+control->*writer:new CompressingFileSystemLogGateway(String fileLocation)
 activate writer
 writer->writer:Constructor
 writer-->control:CompressingFileSystemLogGateway instance
 deactivate writer
-control->service:new ArchivingService(logGateway : ILogGateway, archiveGateway : ILogGateway)
+control->*service:new ArchivingService(logGateway : ILogGateway, archiveGateway : ILogGateway)
 activate service
 service->service:Constructor
 service-->control:ArchivingService instance
 deactivate service
 #Methods Begin
-control-->control:waitForArchive()
+control->>control:waitForArchive()
 note right of control:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method. 
 control->service:archivingService.archiveData(minimumAge : int, tableName : String)
 activate service
-service->service:Get timestamp of date 30 days ago
 service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-reader->reader:Build SQL SELECT query with timestamp
 reader->logs:SELECT statement
 activate logs
 logs-->reader:Selected rows
 deactivate logs
 reader-->service:logs : DataSet
 deactivate reader
-
+service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
+activate reader
+reader->logs:DELETE statement
+activate logs
+logs-->reader:X : int
+deactivate logs
+reader-->service:true : boolean
 service->writer:archiveGateway.writeLogs(logs : DataSet)
 activate writer
 writer->archive:new .zip file
@@ -48,16 +52,8 @@ archive-->writer:
 deactivate archive
 writer-->service:true
 deactivate writer
-service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
-activate reader
-reader->logs:DELETE statement
-activate logs
-logs-->reader:X : int
-deactivate logs
-reader-->service:true : boolean
-deactivate reader
 service-->control:true
-control-->control:waitForArchive()
+control->>control:waitForArchive()
 deactivate service
 
 
