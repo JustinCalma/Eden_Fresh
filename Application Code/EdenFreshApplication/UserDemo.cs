@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 
 namespace EdenFresh
 {
@@ -8,7 +9,6 @@ namespace EdenFresh
         {
             UserRepo repo = new UserRepo();
             createUser(repo);
-            LogWriter log = new LogWriter();
 
 
         }
@@ -31,6 +31,29 @@ namespace EdenFresh
             repo.createUser(testUser6);
             repo.createUser(testUser7);
 
+        }
+
+
+        static void createDatabase()
+        {
+            SqlConnection con = new SqlConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=master;Integrated Security=True");
+            string query = "Create Database TestUserDatabase";
+            SqlCommand cmd = new SqlCommand(query, con);
+            try
+            {
+                con.Open();
+                cmd.ExecuteNonQuery();
+                Console.WriteLine("Database Created Successfully");
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine("Error Generated. Details: " + e.ToString());
+            }
+            finally
+            {
+                con.Close();
+                Console.ReadKey();
+            }
         }
 
 

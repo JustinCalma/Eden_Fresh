@@ -6,7 +6,7 @@ participant "User Management : Controller" as control
 participant "User Management : Service" as service
 participant "User Management : SQL DAO" as umDAO
 participant "User Management : SQL DB" as umStore
-participant "User Management : Logger" as logger
+
 
 activate control
 control->ui : new umUI()
@@ -15,16 +15,16 @@ ui->ui : Constructor
 ui-->control : umUI Instance
 deactivate ui
 
-control->umDAO : dao = new umDAO()
+control->umDAO : new umDAO()
 activate umDAO
 umDAO->umDAO : Constructor
-umDAO-->control : return dao
+umDAO-->control : umDAO Instance
 deactivate umDAO
 
-control->service : service = new umService(dao : umDAO) 
+control->service : new umService(umDAO) 
 activate service
 service->service : Constructor
-service-->control : return service
+service-->control : umService Instance
 deactivate service
 
 control->ui : ui.getUserInput()
@@ -40,20 +40,15 @@ control->control : Validate input
 
 control->service : umService.createUser()
 activate service
-service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
+service->umDAO : umDAO.writeToDataStore(args)
 activate umDAO
-umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password)
+umDAO->umStore : INSERT ...
 activate umStore
-umStore-->umDAO : True : Boolean
+umStore-->umDAO : int : change = 1 (1 line written to SQL DB)
 deactivate umStore
-umDAO-->service : change : int
+umDAO-->service : int change = 1
 deactivate umDAO
 
 # Boolean = true?
-service-->control : True : Boolean
+service-->control : true
 deactivate service
-
-control->logger : new umLogger(userID : int, logLevel : enum, category : enum, message : String)
-activate logger
-logger->logger : Refer to the Logging Sequence Diagram
-logger-->control : True : Boolean
