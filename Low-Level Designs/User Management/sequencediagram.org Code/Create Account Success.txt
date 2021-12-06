@@ -34,7 +34,7 @@ activate admin
 admin-->ui : User attempts to select their desired operation
 deactivate admin
 
-ui-->control : User has selected "Create User"
+ui-->control : User has selected "Create Account"
 deactivate ui
 control->control : Validate input
 
