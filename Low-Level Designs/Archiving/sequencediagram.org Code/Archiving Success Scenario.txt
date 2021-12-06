@@ -32,14 +32,14 @@ activate service
 service->service:Get timestamp of date 30 days ago
 service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-reader->reader:Build SQL SELECT query with timestamp
+reader->reader:Build SQL SELECT query with timestamp string
 reader->logs:SELECT statement
 activate logs
 logs-->reader:Selected rows
 deactivate logs
-reader-->service:logs : DataSet
+reader->reader:Verify that deleted rows satisfy readLogsWhere() comparison
+reader-->service:readLogs : DataSet
 deactivate reader
-
 service->writer:archiveGateway.writeLogs(logs : DataSet)
 activate writer
 writer->archive:new .zip file
@@ -50,13 +50,17 @@ writer-->service:true
 deactivate writer
 service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
+reader->reader: Build SQL DELETE statement with timestamp string
 reader->logs:DELETE statement
 activate logs
-logs-->reader:X : int
+logs-->reader:Deleted rows
 deactivate logs
-reader-->service:true : boolean
+reader->reader:Verify that deleted rows satisfy deleteLogsWhere() comparison
+reader-->service:deletedLogs : DataSet
 deactivate reader
-service-->control:true
+service->service:Verify that deletedLogs matches  readLogs
+service->service:Get number of logs archived
+service-->control:logsArchived : int
 control-->control:waitForArchive()
 deactivate service
 
