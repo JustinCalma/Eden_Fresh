@@ -1,0 +1,39 @@
+title Logging Failure Scenario BLOCK
+
+participant "logWriter : LogWriter" as writer
+participant "logGateway : MSSQLLogGateway" as dao
+participant "SQL Server" as db
+
+note right of db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nNo users can call an UPDATE statement\nover the table containing the entry being inserted.
+#instantiation/constructors
+[->dao:new SQLLogGateway()
+activate dao
+dao->dao:Constructor
+dao-->[:SQLLogGateway instance
+deactivate dao
+[->writer:new LogWriter(logConnection : LogGateway)
+activate writer
+writer->writer:Constructor
+writer-->[:LogWriter instance
+deactivate writer
+#functionality method calls
+[-->writer: logWriter.write(username : String, logLevel : enum, category : enum, message : String)
+activate writer
+note left of writer: System-initiated logs have a username "SYSTEM".\nUser-initiated logs have a username equal to the initiating user's.
+writer->writer:Get current timestamp
+writer->dao:logConnection.writeLogs(username : String, timeDate : String, level : enum, category : enum, message : string)
+activate dao
+dao->dao:Build SQL query from writeLogs() args; sanitize message for SQL insertion.
+#inbound request to show that the log writing is asynchronous
+#SQL statement detailed enough? too detailed?
+dao->db:UPDATE INTO tablename VALUES (username, timedate, level, category, message)\n    OUTPUT UPDATE.*
+activate db
+db->db:Update values into table
+db-->dao:Update Fail to inserted, even thought process done in 5  second 
+deactivate db
+dao->dao:Invalidate update did not save. 
+dao-->writer: false : boolean
+deactivate dao
+note left of writer:The response should occur within 5 second did not  update persistent data.  
+writer-->[: false : boolean
+deactivate writer
