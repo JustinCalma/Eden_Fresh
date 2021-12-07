@@ -17,7 +17,7 @@ writer->writer:Constructor
 writer-->[:LogWriter instance
 deactivate writer
 #functionality method calls
-[-->writer: logWriter.write(username : String, logLevel : enum, category : enum, message : String)
+[->writer: logWriter.write(username : String, logLevel : enum, category : enum, message : String)
 activate writer
 note left of writer: System-initiated logs have a username "SYSTEM".\nUser-initiated logs have a username equal to the initiating user's.
 writer->writer:Get current timestamp
