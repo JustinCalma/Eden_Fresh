@@ -37,7 +37,7 @@ entry->service : umService.updateAccount()
 activate service
 service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
 activate umDAO
-umDAO->umDAO : Build SQL query from writeLogs() args; sanitize message for SQL insertion
+umDAO->umDAO : Build SQL query from writeToDataStore() args; sanitize message for SQL insertion
 umDAO->umStore : UPDATE FROM "TABLE" VALUES (userName, email, password)
 activate umStore
 umStore->umStore : Update values from table
