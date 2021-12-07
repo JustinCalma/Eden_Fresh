@@ -1,0 +1,37 @@
+title Archiving Failure Scenario
+
+participant "archivingManager : ArchivingManager" as control
+participant "archivingService : ArchivingService" as service
+participant "logGateway : SQLLogGateway" as reader
+participant "SQL Server" as logs
+participant "archiveGateway : CompressingFileSystemLogGateway" as writer
+participant "Web Host File System" as archive
+
+#Instantiations (Dependency injection)
+activate control
+control->reader:new SQLLogGateway(String serverConnectionString)
+activate reader
+reader->reader:Constructor
+reader-->control:SQLLogGateway instance
+deactivate reader
+control->writer:new CompressingFileSystemLogGateway(String fileLocation)
+activate writer
+writer->writer:Constructor
+writer-->control:CompressingFileSystemLogGateway instance
+deactivate writer
+control->service:new ArchivingService(logGateway : ILogGateway, archiveGateway : ILogGateway)
+activate service
+service->service:Constructor
+service-->control:ArchivingService instance
+deactivate service
+#Methods Begin
+control-->control:waitForArchive()
+note right of control:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method. 
+control->service:False - archivingService.archiveData(minimumAge : int, tableName : String)
+activate service
+service->service: did not get timestamp
+service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
+activate reader
+reader->reader:Empty (Null error)
+reader-->service: False - Therse is not any logs
+service-->control: False 
