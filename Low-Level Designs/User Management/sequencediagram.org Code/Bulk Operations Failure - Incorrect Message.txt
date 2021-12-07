@@ -1,0 +1,65 @@
+title User Management Success Scenario - Bulk Operations / 10K Bulk Operations Failure Diagram #2
+
+participant "System Administrator" as admin
+participant "umEntry : umEntry" as entry
+participant "umService : umService" as service
+participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "SQL Server" as umStore
+participant "umLogger : LogWriter" as logger
+
+
+activate entry
+
+entry->logger : umLoger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+
+entry->umDAO : dao = new umDAO()
+activate umDAO
+umDAO->umDAO : Constructor
+umDAO-->entry : return dao
+deactivate umDAO
+
+entry->service : service = new umService(dao : umDAO) 
+activate service
+service->service : Constructor
+service-->entry : return service
+deactivate service
+
+
+
+admin->entry : User has selected "Bulk Operations" and uploads the file extract
+note right of entry : File extract cannot be greater than 2GB in size \n& Maximum of 10K operations per request
+entry->entry : Validate input
+
+entry->service : umService.determineOperation()
+activate service
+service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
+activate umDAO
+umDAO->umDAO : Build SQL queries from writeToDataStore() args; sanitize message for SQL insertion; \nbatch X number SQL queries
+umDAO->umStore : Send batched SQL queries
+activate umStore
+umStore->umStore : Refer to single UM operations diagrams
+umStore-->umDAO : True : Boolean
+deactivate umStore
+umDAO-->service : True : Boolean
+deactivate umDAO
+
+service-->entry : True : Boolean
+deactivate service
+note left of entry:The response should occur within 60 seconds of invocation.
+entry-->admin : No system message is shown or inaccurate system message is shown
+
+entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
+activate logger
+logger->logger : Refer to the Logging Sequence Diagram
+logger-->entry : True : Boolean
+deactivate logger
+
+
+# NOTES: 
+#	- Implement AUTHN & AUTHZ
+#	- Layer names correct?
+#	- Bulk Operation admin -> Entry? 
