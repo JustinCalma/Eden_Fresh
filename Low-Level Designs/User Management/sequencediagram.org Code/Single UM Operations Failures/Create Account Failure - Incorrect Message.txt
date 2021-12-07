@@ -1,0 +1,64 @@
+title User Management Success Scenario - Create Account Failure Case #2
+
+participant "System Administrator" as admin
+participant "umEntry : umEntry" as entry
+participant "umService : umService" as service
+participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "SQL Server" as umStore
+participant "umLogger : LogWriter" as logger
+
+
+activate entry
+
+entry->logger : umLoger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+
+entry->umDAO : dao = new umDAO()
+activate umDAO
+umDAO->umDAO : Constructor
+umDAO-->entry : return dao
+deactivate umDAO
+
+entry->service : service = new umService(dao : umDAO) 
+activate service
+service->service : Constructor
+service-->entry : return service
+deactivate service
+
+
+
+admin->entry : User has selected "Create Account"
+entry->entry : Validate input
+
+entry->service : umService.createAccount()
+activate service
+service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
+activate umDAO
+umDAO->umDAO : Build SQL query from writeToDataStore() args; sanitize message for SQL insertion
+umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password)
+activate umStore
+umStore->umStore : Insert values into table
+umStore-->umDAO : True : Boolean
+deactivate umStore
+umDAO->umDAO : Validate inserted logs using the args of writeToDataStore
+umDAO-->service : True : Boolean
+deactivate umDAO
+
+service-->entry : True : Boolean
+deactivate service
+note left of entry: The response should occur within 5 seconds of invocation.
+entry-->admin : No system message is shown or inaccurate system message is shown
+
+entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
+activate logger
+logger->logger : Refer to the Logging Sequence Diagram
+logger-->entry : True : Boolean
+deactivate logger
+
+
+# NOTES: 
+#	- Implement AUTHN & AUTHZ
+#	- Layer names correct?
