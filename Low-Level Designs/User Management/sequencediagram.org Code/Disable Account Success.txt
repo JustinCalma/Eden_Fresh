@@ -1,60 +1,64 @@
 title User Management Success Scenario - Disable Account
 
 participant "System Administrator" as admin
-participant "User Management: UI" as ui
-participant "User Management : Controller" as control
-participant "User Management : Service" as service
-participant "User Management : SQL DAO" as umDAO
-participant "User Management : SQL DB" as umStore
-participant "User Management : Logger" as logger
-
-activate control
-control->ui : new umUI()
-activate ui
-ui->ui : Constructor
-ui-->control : umUI Instance
-deactivate ui
+participant "umEntry : umEntry" as entry
+participant "umService : umService" as service
+participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "SQL Server" as umStore
+participant "umLogger : LogWriter" as logger
 
 
-control->umDAO : dao = new umDAO()
+activate entry
+
+entry->logger : umLoger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+
+entry->umDAO : dao = new umDAO()
 activate umDAO
 umDAO->umDAO : Constructor
-umDAO-->control : return dao
+umDAO-->entry : return dao
 deactivate umDAO
 
-control->service : service = new umService(dao : umDAO) 
+entry->service : service = new umService(dao : umDAO) 
 activate service
 service->service : Constructor
-service-->control : return service
+service-->entry : return service
 deactivate service
 
-control->ui : ui.getUserInput()
-activate ui
-ui->admin : Show prompt to the user
-activate admin
-admin-->ui : User attempts to select their desired operation
-deactivate admin
 
-ui-->control : User has selected "Disable Account"
-deactivate ui
-control->control : Validate input
 
-control->service : umService.disableUser()
+admin->entry : User has selected "Disable Account"
+entry->entry : Validate input
+
+entry->service : umService.disableAccount()
 activate service
 service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
 activate umDAO
+umDAO->umDAO : Build SQL query from writeLogs() args; sanitize message for SQL insertion
 umDAO->umStore : DISABLE FROM "TABLE" VALUES (userName, email, password)
 activate umStore
+umStore->umStore : Disable values from table
 umStore-->umDAO : True : Boolean
 deactivate umStore
-umDAO-->service : change : int
+umDAO-->service : True : Boolean
 deactivate umDAO
 
-# Boolean = true?
-service-->control : True : Boolean
+service-->entry : True : Boolean
 deactivate service
+note left of entry:The response should occur within 5 seconds of invocation.
+entry-->admin : Success message
 
-control->logger : new umLogger(userID : int, logLevel : enum, category : enum, message : String)
+
+entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
-logger-->control : True : Boolean
+logger-->entry : True : Boolean
+deactivate logger
+
+
+# NOTES: 
+#	- Implement AUTHN & AUTHZ
+#	- Layer names correct?

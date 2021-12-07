@@ -1,54 +1,64 @@
 title User Management Success Scenario - Create Account
 
 participant "System Administrator" as admin
-participant "User Management: UI" as ui
-participant "User Management : Controller" as control
-participant "User Management : Service" as service
-participant "User Management : SQL DAO" as umDAO
-participant "User Management : SQL DB" as umStore
+participant "umEntry : umEntry" as entry
+participant "umService : umService" as service
+participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "SQL Server" as umStore
+participant "umLogger : LogWriter" as logger
 
 
-activate control
-control->ui : new umUI()
-activate ui
-ui->ui : Constructor
-ui-->control : umUI Instance
-deactivate ui
+activate entry
 
-control->umDAO : new umDAO()
+entry->logger : umLoger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+
+entry->umDAO : dao = new umDAO()
 activate umDAO
 umDAO->umDAO : Constructor
-umDAO-->control : umDAO Instance
+umDAO-->entry : return dao
 deactivate umDAO
 
-control->service : new umService(umDAO) 
+entry->service : service = new umService(dao : umDAO) 
 activate service
 service->service : Constructor
-service-->control : umService Instance
+service-->entry : return service
 deactivate service
 
-control->ui : ui.getUserInput()
-activate ui
-ui->admin : Show prompt to the user
-activate admin
-admin-->ui : User attempts to select their desired operation
-deactivate admin
 
-ui-->control : User has selected "Create Account"
-deactivate ui
-control->control : Validate input
 
-control->service : umService.createUser()
+admin->entry : User has selected "Create Account"
+entry->entry : Validate input
+
+entry->service : umService.createAccount()
 activate service
-service->umDAO : umDAO.writeToDataStore(args)
+service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
 activate umDAO
-umDAO->umStore : INSERT ...
+umDAO->umDAO : Build SQL query from writeLogs() args; sanitize message for SQL insertion
+umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password)
 activate umStore
-umStore-->umDAO : int : change = 1 (1 line written to SQL DB)
+umStore->umStore : Insert values into table
+umStore-->umDAO : True : Boolean
 deactivate umStore
-umDAO-->service : int change = 1
+umDAO-->service : True : Boolean
 deactivate umDAO
 
-# Boolean = true?
-service-->control : true
+service-->entry : True : Boolean
 deactivate service
+note left of entry:The response should occur within 5 seconds of invocation.
+entry-->admin : Success message
+deactivate service
+
+entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
+activate logger
+logger->logger : Refer to the Logging Sequence Diagram
+logger-->entry : True : Boolean
+deactivate logger
+
+
+# NOTES: 
+#	- Implement AUTHN & AUTHZ
+#	- Layer names correct?
