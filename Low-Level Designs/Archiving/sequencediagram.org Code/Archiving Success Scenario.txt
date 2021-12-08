@@ -80,11 +80,11 @@ reader->logs:DELETE statement
 activate logs
 logs-->reader:Deleted rows
 deactivate logs
-#function verification
 reader->reader:Verify that deleted rows satisfy deleteLogsWhere() comparison
 reader-->service:deletedLogs : DataSet
 deactivate reader
-service->service:Verify that deletedLogs matches  readLogs
+#function verification
+service->service:Verify that deletedLogs matches readLogs
 service->service:Get number of logs archived
 service-->manager:logsArchived : int
 deactivate service
