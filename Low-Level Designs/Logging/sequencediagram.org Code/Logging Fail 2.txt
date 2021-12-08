@@ -21,19 +21,6 @@ deactivate writer
 activate writer
 note left of writer: System-initiated logs have a username "SYSTEM".\nUser-initiated logs have a username equal to the initiating user's.
 writer->writer:Get current timestamp
-writer->dao:logConnection.writeLogs(username : String, timeDate : String, level : enum, category : enum, message : string)
-activate dao
-dao->dao:Build SQL query from writeLogs() args; sanitize message for SQL insertion.
-#inbound request to show that the log writing is asynchronous
-#SQL statement detailed enough? too detailed?
-dao->db:INSERT INTO tablename VALUES (username, timedate, level, category, message)\n    OUTPUT INSERTED.*
-activate db
-db->db:Insert values into table
-db-->dao:Inserted Fail to inserted the data
-deactivate db
-dao->dao:Invalidate inserted values with writeLogs args
-dao-->writer: false : boolean
-deactivate dao
-note left of writer:The response should occur within 5 second but it did not.
+note left of writer:The response should occur within 5 second but Loging process Block.
 writer-->[: false : boolean
 deactivate writer
