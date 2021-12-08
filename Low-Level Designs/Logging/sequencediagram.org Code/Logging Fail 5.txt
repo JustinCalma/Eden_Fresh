@@ -34,6 +34,6 @@ deactivate db
 dao->dao:Validate inserted values with writeLogs args
 dao-->writer: true : boolean
 deactivate dao
-note left of writer:The logging process took longer than 5 seconds to complete upon invocation.
+note left of writer:The response should occur within 5 seconds of invocation.
 writer-->[: true : boolean
 deactivate writer
