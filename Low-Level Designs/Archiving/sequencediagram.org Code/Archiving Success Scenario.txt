@@ -1,14 +1,21 @@
 title Archiving Success Scenario
 
-participant "archivingManager : ArchivingManager" as control
+participant "entryPoint : EntryPoint" as control
+participant "archivingManager : ArchivingManager" as manager
 participant "archivingService : ArchivingService" as service
 participant "logGateway : SQLLogGateway" as reader
 participant "SQL Server" as logs
 participant "archiveGateway : CompressingFileSystemLogGateway" as writer
 participant "Web Host File System" as archive
+participant "logger : LogWriter" as logger
 
 #Instantiations (Dependency injection)
 activate control
+control->logger:new LogWriter()
+activate logger
+logger->logger:Constructor
+logger-->control:LogWriter instance
+deactivate logger
 control->reader:new SQLLogGateway(String serverConnectionString)
 activate reader
 reader->reader:Constructor
@@ -24,12 +31,23 @@ activate service
 service->service:Constructor
 service-->control:ArchivingService instance
 deactivate service
-#Methods Begin
-control-->control:waitForArchive()
-note right of control:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method. 
-control->service:archivingService.archiveData(minimumAge : int, tableName : String)
+control->manager:new ArchivingManager(archivingService : ArchivingService, logger : LogWriter)
+activate manager
+manager->manager:Constructor
+manager-->control:ArchivingManager instance
+deactivate manager
+#begin infinite loop
+control-->manager:Manager.begin()
+activate manager
+note left of manager:Manager.begin() begins an endless loop calling waitForArchive()
+#await archive time
+manager->manager:waitForArchive()
+note right of manager:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method.
+#begin service
+manager->service:archivingService.archiveData(minimumAge : int, tableName : String)
 activate service
 service->service:Get timestamp of date 30 days ago
+#begin querying log database
 service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
 reader->reader:Build SQL SELECT query with timestamp string
@@ -40,21 +58,21 @@ deactivate logs
 reader->reader:Verify that deleted rows satisfy readLogsWhere() comparison
 reader-->service:readLogs : DataTable
 deactivate reader
+#write queried logs to file
 service->writer:archiveGateway.writeLogs(logs : DataTable)
 activate writer
 writer->archive:New .txt file
 archive-->writer:Success
 activate archive
-writer->writer:Iterate through readLogs rows
-loop n < logs.size
-writer->archive:Write nth row of readLogs to .txt file
+writer->writer:Loop through readLogs rows
+writer->archive:Write each iterated row of readLogs to .txt file
 archive-->writer:Success
-end
 writer->archive:Compress .txt file to .zip file
 archive-->writer:Success
 deactivate archive
 writer-->service:true : Boolean
 deactivate writer
+#delete archived logs
 service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
 reader->reader: Build SQL DELETE statement with timestamp string
@@ -62,20 +80,18 @@ reader->logs:DELETE statement
 activate logs
 logs-->reader:Deleted rows
 deactivate logs
+#function verification
 reader->reader:Verify that deleted rows satisfy deleteLogsWhere() comparison
 reader-->service:deletedLogs : DataSet
 deactivate reader
 service->service:Verify that deletedLogs matches  readLogs
 service->service:Get number of logs archived
-service-->control:logsArchived : int
+service-->manager:logsArchived : int
 deactivate service
-control-->control:waitForArchive()
-
-
-# UNSURE:
-# How to compress files?
-# SQL Server has a BACKUP command. Should use?
-# How to add new entries to a SQL backup file?
-# 	Can we save multiple backups and restore differentially a la git?
-# Need to specify that the sequence is occurring at midnight of the first of the month/ whatever time?
-# How to specify fitting performance NFR and other NFRs?
+#perform logging
+manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, message : string)
+activate logger
+logger->logger:Refer to the "Logging Success Scenario" diagram
+logger-->manager: true : boolean
+#loop continues
+manager->manager:waitForArchive()
