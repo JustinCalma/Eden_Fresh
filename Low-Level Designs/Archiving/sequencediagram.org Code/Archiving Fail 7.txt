@@ -84,5 +84,6 @@ manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, m
 activate logger
 logger->logger:Refer to the "Logging Success Scenario" diagram
 logger-->manager: true : boolean
+deactivate logger
 #loop continues
 manager->manager:waitForArchive()
