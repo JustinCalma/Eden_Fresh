@@ -1,16 +1,36 @@
 title User Management Success Scenario - Create Account
 
-participant "System Administrator" as admin
+#participant "System Administrator" as admin
 participant "umEntry : umEntry" as entry
 participant "umService : umService" as service
 participant "umDAO : (MSSQLUMGateway)" as umDAO
 participant "SQL Server" as umStore
 participant "umLogger : LogWriter" as logger
+participant "umAuthentication : Authentication" as authN
+participant "umAuthorization : Authorization" as authZ
 
 
 activate entry
 
-entry->logger : umLoger = new LogWriter()
+entry->authZ : umAuthentication = new Authentication()
+
+activate authZ
+authZ->authZ : Constructor
+authZ-->entry : return umAuthentication
+deactivate authZ
+
+entry->authN : umAuthorization = new umAuthentication(umAuthentication : Authenication) 
+activate authN
+authN->authN : Constructor
+authN->authN : Authenticate User
+authN->authZ : Authorize User
+activate authZ
+authZ->authN : Response
+deactivate authZ
+authN-->entry : return umAuthorizaiton
+deactivate authN
+
+entry->logger : umLogger = new LogWriter()
 activate logger
 logger->logger : Constructor
 logger-->entry : return umLogger
@@ -30,7 +50,7 @@ deactivate service
 
 
 
-admin->entry : User has selected "Create Account"
+[->entry : User has selected "Create Account"
 entry->entry : Validate input
 
 entry->service : umService.createAccount()
@@ -38,19 +58,20 @@ activate service
 service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
 activate umDAO
 umDAO->umDAO : Build SQL query from writeToDataStore() args; sanitize message for SQL insertion
-umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password)
+umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password) OUTPUT INSERTED*
 activate umStore
 umStore->umStore : Insert values into table
-umStore-->umDAO : True : Boolean
+umStore-->umDAO : Inserted Row
 deactivate umStore
+umDAO->umDAO : Validate inserted values with writeToDataStore arugments
+
 umDAO-->service : True : Boolean
 deactivate umDAO
 
 service-->entry : True : Boolean
 deactivate service
 note left of entry:The response should occur within 5 seconds of invocation.
-entry-->admin : Success message
-deactivate service
+entry-->[ : Single UM Operation Successful
 
 entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
