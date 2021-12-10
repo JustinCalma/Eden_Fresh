@@ -1,4 +1,4 @@
-title Archiving Fail - Did Not Log All Valid Entries
+title Archiving Fail - Did Not Archive All Valid Entries
 
 participant "entryPoint : EntryPoint" as control
 participant "archivingManager : ArchivingManager" as manager

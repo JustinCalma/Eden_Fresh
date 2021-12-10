@@ -1,4 +1,5 @@
 title Archiving Fail - Did Not Relocate
+
 participant "entryPoint : EntryPoint" as control
 participant "archivingManager : ArchivingManager" as manager
 participant "archivingService : ArchivingService" as service
