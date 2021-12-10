@@ -1,4 +1,4 @@
-title Logging Failure Scenario BLOCK
+title Logging Fail - User Blocked
 
 participant "logWriter : LogWriter" as writer
 participant "logGateway : MSSQLLogGateway" as dao
