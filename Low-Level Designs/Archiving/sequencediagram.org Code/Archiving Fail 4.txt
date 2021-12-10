@@ -57,14 +57,25 @@ activate reader
 reader->reader:Build SQL SELECT query with timestamp string
 reader->logs:SELECT statement
 activate logs
-logs->logs:Query processing fails
-logs-->reader:Error code
+logs->logs:Process query
+logs-->reader:Selected rows
 deactivate logs
-reader-->service:e : SQLQueryFailedException
+reader->reader:Verify that selected rows satisfy readLogsWhere() comparison
+reader-->service:readLogs : DataTable
 deactivate reader
 
-#skip to end because something is wrong with data store
-service->service:Set number of logsArchived to -1
+#write queried logs to file
+service->writer:archiveGateway.writeLogs(logs : DataTable)
+activate writer
+writer->archive:New .txt file
+activate archive
+archive-->writer:File creation failed
+deactivate archive
+writer-->service:false : Boolean
+deactivate writer
+
+#function verification
+service->service:Set logsArchived to -1
 service-->manager:logsArchived : int
 deactivate service
 
