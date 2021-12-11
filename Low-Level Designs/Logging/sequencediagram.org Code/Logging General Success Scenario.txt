@@ -1,39 +1,47 @@
 title Logging Success Scenario
 
+participant "Any Feature" as feature
 participant "logWriter : LogWriter" as writer
 participant "logGateway : MSSQLLogGateway" as dao
 participant "SQL Server" as db
 
 note right of db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nNo users can call an UPDATE statement\nover the table containing the entry being inserted.
 #instantiation/constructors
-[->dao:new SQLLogGateway()
+activate feature
+feature->dao:new SQLLogGateway()
 activate dao
 dao->dao:Constructor
-dao-->[:SQLLogGateway instance
+dao-->feature:SQLLogGateway instance
 deactivate dao
-[->writer:new LogWriter(logConnection : LogGateway)
+feature->writer:new LogWriter(logConnection : LogGateway)
 activate writer
 writer->writer:Constructor
-writer-->[:LogWriter instance
+writer-->feature:LogWriter instance
 deactivate writer
-#functionality method calls
-[-->writer: logWriter.write(username : String, logLevel : enum, category : enum, message : String)
+#begin functionality
+feature-->writer: logWriter.Write(userID : Integer, logLevel : Enum, category : Enum, message : String)
 activate writer
+note left of writer:<size:20>↑
 note left of writer: System-initiated logs have a username "SYSTEM".\nUser-initiated logs have a username equal to the initiating user's.
-writer->writer:Get current timestamp
-writer->dao:logConnection.writeLogs(username : String, timeDate : String, level : enum, category : enum, message : string)
+
+#logWriter begins
+writer->writer:String timeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
+writer->dao:logConnection.WriteLogs(userID : String, timeDate : String, logLevel : Enum, category : Enum, message : String)
 activate dao
-dao->dao:Build SQL query from writeLogs() args; sanitize message for SQL insertion.
-#inbound request to show that the log writing is asynchronous
-#SQL statement detailed enough? too detailed?
-dao->db:INSERT INTO tablename VALUES (username, timedate, level, category, message)\n    OUTPUT INSERTED.*
+
+#dao begins
+dao->dao:String query = $"INSERT INTO logs (userid, timedate, level, category, message)\n    VALUES ({userID}, {timeDate}, {logLevel}, {category}, {message})"
+dao->db:INSERT INTO tableName (userid, timedate, level, category, message)\n    VALUES (userID, timeDate, logLevel, category, message)
 activate db
 db->db:Insert values into table
-db-->dao:Inserted row
+
+#returns
+db-->dao:1 : Integer
 deactivate db
-dao->dao:Validate inserted values with writeLogs args
-dao-->writer: true : boolean
+dao-->writer: true : Boolean
 deactivate dao
 note left of writer:The response should occur within 5 seconds of invocation.
-writer-->[: true : boolean
+note left of writer:<size:20>↓
+writer-->feature: true : boolean
 deactivate writer
+deactivate feature
