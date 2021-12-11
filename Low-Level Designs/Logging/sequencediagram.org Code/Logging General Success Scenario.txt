@@ -45,3 +45,12 @@ note left of writer:<size:20>↓
 writer-->feature: true : boolean
 deactivate writer
 deactivate feature
+
+#Blockers:
+#How to enforce the time requirement?
+#    https://softwareengineering.stackexchange.com/questions/209896/call-a-function-and-never-wait-for-it-in-c
+#    From what I gather, start a timer then perform the functionality async. If the timer completes, throw an exception - if the functionality returns, return true.
+#        If we go this route, how do we handle catching exceptions from the functionality?
+#        
+#How to enforce asynchronous execution?
+#    
