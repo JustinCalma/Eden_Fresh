@@ -63,7 +63,7 @@ activate manager
 manager->authZ : umAuthorization.AuthorizeUser(userID : String)
 activate authZ
 #	authorization depends on authentication first
-authZ->authN : AuthenticateUser(userID : String)
+authZ->authN : umAuthentication.AuthenticateUser(userID : String)
 activate authN
 authN->authZ : True : Boolean
 deactivate authN
@@ -89,14 +89,14 @@ service-->manager : True : Boolean
 deactivate service
 manager-->entry: True : Boolean
 deactivate manager
-note left of entry:The response should occur within 5 seconds of invocation.
-note left of entry:<size:20>↓
 #before completing functionality, perform logging
 entry-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->entry : True : Boolean
 deactivate logger
+note left of entry:The response should occur within 5 seconds of invocation.
+note left of entry:<size:20>↓
 entry-->cmd : Single UM Operation Successful
 deactivate entry
 deactivate cmd
