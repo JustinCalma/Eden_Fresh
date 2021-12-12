@@ -1,65 +1,120 @@
-title User Management Success Scenario - Bulk Operations / 10K Bulk Operations Failure Diagram #2
+title User Management Success Scenario - Bulk Operations / 10K Bulk Operations Failure Diagram #2 - Incorrect Message
 
-participant "System Administrator" as admin
-participant "umEntry : umEntry" as entry
+#participant "System Administrator" as admin
+participant "Command Line" as cmd
+participant "Main : umEntry" as entry
+participant "umManager : umManager" as manager
 participant "umService : umService" as service
-participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "umDAO : MSSQLUMGateway" as umDAO
 participant "SQL Server" as umStore
 participant "umLogger : LogWriter" as logger
+participant "umAuthorization : Authorization" as authZ
+participant "umAuthentication : Authentication" as authN
 
+activate cmd
 
+cmd->entry :  User has selected Bulk Operations
+#instantiations
 activate entry
-
-entry->logger : umLoger = new LogWriter()
-activate logger
-logger->logger : Constructor
-logger-->entry : return umLogger
-deactivate logger
-
+entry->entry : Validate input (request : int)
+note right of entry : File extract cannot be greater than 2GB in size \n& Maximum of 10K operations per request
+#	instantiate authentication
+entry->authN : umAuthentication = new Authentication()
+activate authN
+authN->authN : Constructor
+authN-->entry : return umAuthentication
+deactivate authN
+#	instantiate authorization
+entry->authZ : new umAuthorization(umAuthentication : Authentication)
+activate authZ
+authZ->authZ : Constructor
+authZ-->entry : return umAuthentication
+deactivate authZ
+#	instantiate gateway
 entry->umDAO : dao = new umDAO()
 activate umDAO
 umDAO->umDAO : Constructor
 umDAO-->entry : return dao
 deactivate umDAO
-
-entry->service : service = new umService(dao : umDAO) 
+#	instantiate service
+entry->service : service = new umService(umDAO : MSSQLUMGateway) 
 activate service
 service->service : Constructor
 service-->entry : return service
 deactivate service
+#	instantiate logger
+entry->logger : umLogger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+#	instantiate manager
+entry->manager : manager = new umManager(userID : String, umService : umService, umAuthorization : Authorization)
+activate manager
+manager->manager: Constructor
+manager-->entry : return manager
+deactivate manager
 
 
+#begin functionality
+entry->manager : umService.determineOperation(fileExtract : File)
+activate manager
 
-admin->entry : User has selected "Bulk Operations" and uploads the file extract
-note right of entry : File extract cannot be greater than 2GB in size \n& Maximum of 10K operations per request
-entry->entry : Validate input
+#authorize user before proceeding to functionality
+manager->authZ : umAuthorization.AuthorizeUser(userID : String)
+activate authZ
+#	authorization depends on authentication first
+authZ->authN : umAuthentication.AuthenticateUser(userID : String)
+activate authN
+authN->authZ : True : Boolean
+deactivate authN
+authZ-->manager : True : Boolean
+deactivate authZ
 
-entry->service : umService.determineOperation()
+note right of manager : Loop through fileExtract. n will represent the number of lines within the file
+note right of manager : for(i = 0; i < n; i+ +)
+note right of manager:<size:20>↓
+loop
+manager->manager : Store each element in every iterated row of fileExtract \ninto the arrays userName, email, password 
+end
+
+#authorization complete, continue to functionality
+manager->service : umService.CreateAccount(userName : String[], email : String[], password : String[], isEnabled : Boolean)
 activate service
-service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
+service->umDAO : umDAO.WriteToDataStore(userName : String[], email : String[], password : String[], isEnabled : Boolean)
 activate umDAO
-umDAO->umDAO : Build SQL queries from writeToDataStore() args; sanitize message for SQL insertion; \nbatch X number SQL queries
-umDAO->umStore : Send batched SQL queries
+
+note right of umDAO : Loop and build the SQL queries depending on operation \n$"INSERT INTO users (userName, email, password, enabled) VALUES ({userName}, {email}, {password}, {isEnabled})" \n$"DELETE FROM users WHERE username = {userName}, email = {email}, password = {password}" \n$"UPDATE users SET email = {email}, password = {password}, enabled = {isEnabled} WHERE username = {username}"
+note right of umDAO : for(i = 0; i < n/100; i+ +)
+note right of umDAO : <size:20>↓
+loop
+umDAO->umDAO : Build SQL queries from writeToDataStore() args \nand batch 100 queries together
+end 
+umDAO->umStore : Send batched queries to SQL Server
 activate umStore
-umStore->umStore : Refer to single UM operations diagrams
-umStore-->umDAO : True : Boolean
+umStore->umStore : Insert/DELETE/UPDATE values into table
+
+#return chain
+umStore-->umDAO : 100 : int
 deactivate umStore
 umDAO-->service : True : Boolean
 deactivate umDAO
-
-service-->entry : True : Boolean
+service-->manager : True : Boolean
 deactivate service
-note left of entry:The response should occur within 60 seconds of invocation.
-entry-->admin : No system message is shown or inaccurate system message is shown
-
-entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
+#before completing functionality, perform logging
+manager-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
-logger-->entry : True : Boolean
+logger-->manager : True : Boolean
 deactivate logger
-
+manager-->entry: True : Boolean
+deactivate manager
+note left of entry:The response should occur within 60 seconds of invocation.
+note left of entry:<size:20>↓
+entry-->cmd : No system message or an inaccurate system message is shown
+deactivate entry
+deactivate cmd
 
 # NOTES: 
 #	- Implement AUTHN & AUTHZ
 #	- Layer names correct?
-#	- Bulk Operation admin -> Entry? 
