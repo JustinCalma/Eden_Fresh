@@ -46,7 +46,7 @@ note left of manager:Manager.begin() begins an endless loop calling waitForArchi
 #await archive time
 manager->manager: WaitForArchive()
 note right of manager: <size:15>↑
-note right of manager: WaitForArchive() did start but did not start at 00:00:00 AM local time on the first of the month then calls the next method. 
+note right of manager: WaitForArchive() did start but did not start at 00:00:00 AM, did not local time on the first of the month then calls the next method. 
 
 #begin service
 manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
