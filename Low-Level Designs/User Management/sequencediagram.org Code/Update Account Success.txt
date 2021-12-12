@@ -73,7 +73,7 @@ deactivate authZ
 #authorization complete, continue to functionality
 manager->service : umService.UpdateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
 activate service
-service->umDAO : umDAO.WriteToDataStore(userName : String, email : String, password : String, isEnabled : Boolean)
+service->umDAO : umDAO.UpdateDataStore(userName : String, email : String, password : String, isEnabled : Boolean)
 activate umDAO
 umDAO->umDAO : String query = $"UPDATE users\n    SET email = {email}, password = {password}, enabled = {isEnabled}\n    WHERE username = {username}"
 umDAO->umStore : UPDATE users\n    SET email = email, password = password, enabled = isEnabled\n    WHERE username = username
