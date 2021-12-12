@@ -93,10 +93,10 @@ activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->manager : True : Boolean
 deactivate logger
+note left of manager:The response should occur within 5 seconds of invocation.
+note left of manager:<size:20>↓
 manager-->entry: True : Boolean
 deactivate manager
-note left of entry:The response should occur within 5 seconds of invocation.
-note left of entry:<size:20>↓
 entry-->cmd : Single UM Operation Successful
 deactivate entry
 deactivate cmd
