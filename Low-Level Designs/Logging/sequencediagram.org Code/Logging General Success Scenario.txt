@@ -23,7 +23,7 @@ deactivate writer
 feature-->writer: logWriter.Write(userID : Integer, logLevel : Enum, category : Enum, message : String)
 activate writer
 note left of writer:<size:20>↑
-note left of writer: System-initiated logs have a username "SYSTEM".\nUser-initiated logs have a username equal to the initiating user's.
+note left of writer: System-initiated logs have a user ID 0.\nUser-initiated logs have a nonzero user ID equal to the initiating user's.
 writer->writer:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
 
 #logWriter begins
