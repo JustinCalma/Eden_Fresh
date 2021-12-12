@@ -38,25 +38,25 @@ manager-->control:ArchivingManager instance
 deactivate manager
 
 #begin infinite loop
-control-->manager:Manager.begin()
+control-->manager:Manager.BeginAsync()
 activate manager
 note left of manager: <size:15>↑
 note left of manager:Manager.begin() begins an endless loop calling waitForArchive()
 
 #await archive time
-manager->manager:waitForArchive()
+manager->manager: WaitForArchive()
 note right of manager: <size:15>↑
-note right of manager:waitForArchive() waits until 00:00:00 AM local time on the first of the month then calls the next method. 
+note right of manager: WaitForArchive() waits until 00:00:00 AM local time on the first of the month then calls the next method. 
 
 #begin service
-manager->service:archivingService.archiveData(minimumAge : int, tableName : String)
+manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
 activate service
 note right of service: Get timestamp of date 30 days ago 
 note right of service:<size:15>↓
-service->service: String timeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
+service->service: String TimeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
 
 #begin querying log database
-service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
+service->reader:logGateway.ReadLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
 note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp
 note right of reader: <size:15>↓
@@ -71,7 +71,7 @@ reader-->service:readLogs : DataTable
 deactivate reader
 
 #write queried logs to file
-service->writer:archiveGateway.writeLogs(logs : DataTable)
+service->writer:archiveGateway.WriteLogs(logs : DataTable)
 activate writer
 writer->archive:New .txt file
 archive-->writer:Success
@@ -94,7 +94,7 @@ writer-->service:true : Boolean
 deactivate writer
 
 #delete archived logs
-service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
+service->reader:logGateway.DeleteLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
 note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp 
 note right of reader: <size:15>↓
@@ -115,11 +115,11 @@ service-->manager:logsArchived : int
 deactivate service
 
 #perform logging
-manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, message : string)
+manager-->logger: logger.Write(userID : int, logLevel : enum, category : enum, message : string)
 activate logger
 logger->logger:Refer to the "Logging Success Scenario" diagram
 logger-->manager: true : boolean
 deactivate logger
 
 #loop continues
-manager->manager:waitForArchive()
+manager->manager:WaitForArchive()
