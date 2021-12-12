@@ -1,4 +1,4 @@
-title User Management Single Operation Fail - Create Account - Write Fail
+title User Management Single Operation Fail - Create Account - Did Not Write to Data Store
 
 #participant "System Administrator" as admin
 participant "Command Line" as cmd

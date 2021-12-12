@@ -1,4 +1,4 @@
-title User Management Single Operation Fail - Disable Account - Write Fail
+title User Management Single Operation Fail - Disable Account - Did Not Write to Data Store
 
 #participant "System Administrator" as admin
 participant "Command Line" as cmd
