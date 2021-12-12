@@ -8,60 +8,70 @@ participant "umService : umService" as service
 participant "umDAO : MSSQLUMGateway" as umDAO
 participant "SQL Server" as umStore
 participant "umLogger : LogWriter" as logger
-participant "umAuthentication : Authentication" as authN
 participant "umAuthorization : Authorization" as authZ
+participant "umAuthentication : Authentication" as authN
 
 activate cmd
 
 cmd->entry : User has selected "Create Account"
+#instantiations
 activate entry
 entry->entry : Validate input (request : int)
-
-entry->manager : manager = new umManager(userID : String)
-
-activate manager
-manager->authN : umAuthentication = new Authentication()
+#	instantiate authentication
+entry->authN : umAuthentication = new Authentication()
 activate authN
 authN->authN : Constructor
-authN-->manager : return umAuthentication
+authN-->entry : return umAuthentication
 deactivate authN
-
-manager->authZ : new umAuthorization(umAuthentication : Authentication, userID : String)
+#	instantiate authorization
+entry->authZ : new umAuthorization(umAuthentication : Authentication)
 activate authZ
 authZ->authZ : Constructor
-authZ-->manager : return umAuthentication
-
-authZ->authN : AuthenticateUser(userID : String)
-activate authN
-authN->authZ : True : Boolean
-deactivate authN
-
-authZ->authZ : AuthorizeUser(userID : String)
-authZ-->manager : True : Boolean
+authZ-->entry : return umAuthentication
 deactivate authZ
-
-manager-->entry : return manager
-deactivate manager
-
-entry->logger : umLogger = new LogWriter()
-activate logger
-logger->logger : Constructor
-logger-->entry : return umLogger
-deactivate logger
-
+#	instantiate gateway
 entry->umDAO : dao = new umDAO()
 activate umDAO
 umDAO->umDAO : Constructor
 umDAO-->entry : return dao
 deactivate umDAO
-
-entry->service : service = new umService(dao : umDAO) 
+#	instantiate service
+entry->service : service = new umService(umDAO : MSSQLUMGateway) 
 activate service
 service->service : Constructor
 service-->entry : return service
 deactivate service
+#	instantiate logger
+entry->logger : umLogger = new LogWriter()
+activate logger
+logger->logger : Constructor
+logger-->entry : return umLogger
+deactivate logger
+#	instantiate manager
+entry->manager : manager = new umManager(userID : String, umService : umService, umAuthorization : Authorization)
+activate manager
+manager->manager: Constructor
+manager-->entry : return manager
+deactivate manager
 
-entry->service : umService.CreateAccount(userName : String, email : String, password : String)
+
+#begin functionality
+entry->manager : umManager.CreateAccount(userName : String, email : String, password : String)
+activate manager
+
+#authorize user before proceeding to functionality
+manager->authZ : umAuthorization.AuthorizeUser(userID : String)
+activate authZ
+#	authorization depends on authentication first
+authZ->authN : AuthenticateUser(userID : String)
+activate authN
+authN->authZ : True : Boolean
+deactivate authN
+authZ-->manager : True : Boolean
+deactivate authZ
+
+#authorization complete, continue to functionality
+manager->service : umService.CreateAccount(userName : String, email : String, password : String)
 activate service
 service->umDAO : umDAO.WriteToDataStore(userName : String, email : String, password : String)
 activate umDAO
@@ -69,25 +79,26 @@ umDAO->umDAO : String query = $"INSERT INTO users (userName, email, password)\n 
 umDAO->umStore : INSERT into users VALUES (userName, email, password)
 activate umStore
 umStore->umStore : Insert values into table
+
+#return chain
 umStore-->umDAO : 1 : int
 deactivate umStore
-
-
 umDAO-->service : True : Boolean
 deactivate umDAO
-
-service-->entry : True : Boolean
+service-->manager : True : Boolean
 deactivate service
+manager-->entry: True : Boolean
+deactivate manager
 note left of entry:The response should occur within 5 seconds of invocation.
 note left of entry:<size:20>↓
-entry-->cmd : Single UM Operation Successful
-
+#before completing functionality, perform logging
 entry-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->entry : True : Boolean
 deactivate logger
-
+entry-->cmd : Single UM Operation Successful
+deactivate entry
 deactivate cmd
 
 # NOTES: 
