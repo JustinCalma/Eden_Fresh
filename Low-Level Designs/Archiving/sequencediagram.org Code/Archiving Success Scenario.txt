@@ -72,7 +72,7 @@ activate writer
 writer->archive:New .txt file
 archive-->writer:Success
 activate archive
-note right of writer:Loop through readLogs rows. | n will be number of logs.
+note right of writer:Loop through readLogs rows. n will be number of logs. <size:20>↓
 loop n == 0 
 writer->writer: read = readLogs(n-1);
 end
@@ -101,7 +101,7 @@ deactivate reader
 #function verification
 note right of service: verify that deleteLogs matches readLogs <size:20>↓
 service->service: matches(){  }
-service->service: count number of logs ??
+service->service: count number of lo
 service-->manager:logsArchived : int
 deactivate service
 
