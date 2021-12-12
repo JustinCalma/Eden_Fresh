@@ -38,73 +38,89 @@ manager-->control:ArchivingManager instance
 deactivate manager
 
 #begin infinite loop
-control-->manager:Manager.begin()
+control-->manager:Manager.BeginAsync()
 activate manager
+note left of manager: <size:15>↑
 note left of manager:Manager.begin() begins an endless loop calling waitForArchive()
 
 #await archive time
-manager->manager:waitForArchive()
-note right of manager:waitForArchive() waits until 00:00:00 AM local time\non the first of the month then calls the next method.
+manager->manager: WaitForArchive()
+note right of manager: <size:15>↑
+note right of manager: WaitForArchive() waits waits until 00:00:00 AM local time\non an unspecified day then calls the next method.
 
 #begin service
-manager->service:archivingService.archiveData(minimumAge : int, tableName : String)
+manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
 activate service
-service->service:Get timestamp of date 30 days ago
+note right of service: Get timestamp of date 30 days ago 
+note right of service:<size:15>↓
+service->service: String TimeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
 
 #begin querying log database
-service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
+service->reader:logGateway.ReadLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-reader->reader:Build SQL SELECT query with timestamp string
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp
+note right of reader: <size:15>↓
+reader->reader: String selectQuery = "Select  * From readLogsWhere where timeStamp =" + timestamp
 reader->logs:SELECT statement
 activate logs
-logs->logs:Process query
+logs->logs: selectQuery runtime
 logs-->reader:Selected rows
 deactivate logs
-reader->reader:Verify that selected rows satisfy readLogsWhere() comparison
+
 reader-->service:readLogs : DataTable
 deactivate reader
 
 #write queried logs to file
-service->writer:archiveGateway.writeLogs(logs : DataTable)
+service->writer:archiveGateway.WriteLogs(logs : DataTable)
 activate writer
 writer->archive:New .txt file
 archive-->writer:Success
 activate archive
-writer->writer:Loop through readLogs rows
+note right of writer:Loop through readLogs rows. n will be number of logs. 
+note left of archive: <size:15>↓
+
+note left of archive:for (i=0; i < n; i++)
+note left of archive: <size:15>↓
+loop
 writer->archive:Write each iterated row of readLogs to .txt file
 archive-->writer:Success
+end
 writer->archive:Compress .txt file to .zip file
+note left of archive:<size:15>↑
+note left of archive: .zip file is saved to file system
 archive-->writer:Success
 deactivate archive
 writer-->service:true : Boolean
 deactivate writer
 
 #delete archived logs
-service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
+service->reader:logGateway.DeleteLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-reader->reader: Build SQL DELETE statement with timestamp string
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp 
+note right of reader: <size:15>↓
+reader->reader: String deleteQuery = "Delete * From readLogsWhere where timeStamp = " + timestamp
 reader->logs:DELETE statement
 activate logs
-logs->logs:Process query
-logs-->reader:Deleted rows
+logs->logs: deleteQuery rutime
+logs-->reader:Number of deleted row
 deactivate logs
-reader->reader:Verify that deleted rows satisfy deleteLogsWhere() comparison
-reader-->service:deletedLogs : DataSet
+reader-->service:true:Boolean
 deactivate reader
 
 #function verification
-service->service:Verify that deletedLogs matches readLogs
-service->service:Get number of logs archived
+note right of service: countLogsArchived() is a functions return number of read logs
+note right of service: <size:15>↓
+service->service: int logsArchived = countLogsArchived(); 
 service-->manager:logsArchived : int
 note right of manager:Archival process took longer than 60 seconds to complete upon invocation.
 deactivate service
 
 #perform logging
-manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, message : string)
+manager-->logger: logger.Write(userID : int, logLevel : enum, category : enum, message : string)
 activate logger
 logger->logger:Refer to the "Logging Success Scenario" diagram
 logger-->manager: true : boolean
 deactivate logger
 
 #loop continues
-manager->manager:waitForArchive()
+manager->manager:WaitForArchive()
