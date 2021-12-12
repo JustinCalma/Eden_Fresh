@@ -40,23 +40,27 @@ deactivate manager
 #begin infinite loop
 control-->manager:Manager.begin()
 activate manager
-note left of manager:Manager.begin() begins an endless loop calling waitForArchive() <size:20>↑
+note left of manager: <size:15>↑
+note left of manager:Manager.begin() begins an endless loop calling waitForArchive()
 
 #await archive time
 manager->manager:waitForArchive()
-note right of manager:waitForArchive() waits until 00:00:00 AM local time on the first of the month then calls the next method. <size:20>↑
+note right of manager: <size:15>↑
+note right of manager:waitForArchive() waits until 00:00:00 AM local time on the first of the month then calls the next method. 
 
 #begin service
 manager->service:archivingService.archiveData(minimumAge : int, tableName : String)
 activate service
-note right of service: Get timestamp of date 30 days ago <size:20>↓
+note right of service: Get timestamp of date 30 days ago 
+note right of service:<size:15>↓
 service->service: String timeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
 
 #begin querying log database
 service->reader:logGateway.readLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp <size:20>↓
-reader->reader: String selectQuery = "Select  * From readLogsWhere where timeStamp = ? "
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp
+note right of reader: <size:15>↓
+reader->reader: String selectQuery = "Select  * From readLogsWhere where timeStamp =" + timestamp
 reader->logs:SELECT statement
 activate logs
 logs->logs: selectQuery runtime
@@ -72,14 +76,18 @@ activate writer
 writer->archive:New .txt file
 archive-->writer:Success
 activate archive
-note right of writer:Loop through readLogs rows. n will be number of logs. <size:20>↓
-loop n == 0 
-writer->writer: read = readLogs(n-1);
-end
+note right of writer:Loop through readLogs rows. n will be number of logs. 
+note left of archive: <size:15>↓
+
+note left of archive:for (i=0; i < n; i++)
+note left of archive: <size:15>↓
+loop
 writer->archive:Write each iterated row of readLogs to .txt file
 archive-->writer:Success
+end
 writer->archive:Compress .txt file to .zip file
-note left of archive: File System acces to save compress file <size:20>↑
+note left of archive:<size:15>↑
+note left of archive: .zip file is saved to file system
 archive-->writer:Success
 deactivate archive
 writer-->service:true : Boolean
@@ -88,28 +96,28 @@ deactivate writer
 #delete archived logs
 service->reader:logGateway.deleteLogsWhere(columnName : String, comparator : Enum, value : String)
 activate reader
-note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp <size:20>↓
-reader->reader: String deleteQuery = "Delete * From readLogsWhere where timeStamp = ? "
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp 
+note right of reader: <size:15>↓
+reader->reader: String deleteQuery = "Delete * From readLogsWhere where timeStamp = " + timestamp
 reader->logs:DELETE statement
 activate logs
 logs->logs: deleteQuery rutime
-logs-->reader:Deleted rows
+logs-->reader:Number of deleted row
 deactivate logs
-reader-->service:deletedLogs : DataSet
+reader-->service:true:Boolean
 deactivate reader
 
 #function verification
-note right of service: verify that deleteLogs matches readLogs <size:20>↓
-service->service: matches(){  }
-service->service: count number of lo
+note right of service: countLogsArchived() is a functions return number of read logs
+note right of service: <size:15>↓
+service->service: int logsArchived = countLogsArchived(); 
 service-->manager:logsArchived : int
 deactivate service
 
 #perform logging
 manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, message : string)
 activate logger
-note right of logger:Refer to the "Logging Success Scenario" diagram <size:20>↓
-logger->logger:loggingSuccess()
+logger->logger:Refer to the "Logging Success Scenario" diagram
 logger-->manager: true : boolean
 deactivate logger
 
