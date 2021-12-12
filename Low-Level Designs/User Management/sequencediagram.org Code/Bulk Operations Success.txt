@@ -101,14 +101,14 @@ umDAO-->service : True : Boolean
 deactivate umDAO
 service-->manager : True : Boolean
 deactivate service
-manager-->entry: True : Boolean
-deactivate manager
 #before completing functionality, perform logging
-entry-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
+manager-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
-logger-->entry : True : Boolean
+logger-->manager : True : Boolean
 deactivate logger
+manager-->entry: True : Boolean
+deactivate manager
 note left of entry:The response should occur within 60 seconds of invocation.
 note left of entry:<size:20>↓
 entry-->cmd : Bulk UM operation was successful
