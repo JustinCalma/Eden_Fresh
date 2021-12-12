@@ -1,4 +1,4 @@
-title User Management Single Operation Fail - Create Account - Write Fail
+title User Management Single Operation Fail - Update Account - Write Fail
 
 #participant "System Administrator" as admin
 participant "Command Line" as cmd
@@ -13,7 +13,7 @@ participant "umAuthentication : Authentication" as authN
 
 activate cmd
 
-cmd->entry : User has selected "Create Account"
+cmd->entry : User has selected "Update Account"
 #instantiations
 activate entry
 entry->entry : Validate input (request : int)
@@ -56,7 +56,7 @@ deactivate manager
 
 
 #begin functionality
-entry->manager : umManager.CreateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
+entry->manager : umManager.UpdateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
 activate manager
 
 #authorize user before proceeding to functionality
@@ -71,14 +71,14 @@ authZ-->manager : True : Boolean
 deactivate authZ
 
 #authorization complete, continue to functionality
-manager->service : umService.CreateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
+manager->service : umService.UpdateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
 activate service
-service->umDAO : umDAO.WriteToDataStore(userName : String, email : String, password : String, isEnabled : Boolean)
+service->umDAO : umDAO.UpdateDataStore(userName : String, email : String, password : String, isEnabled : Boolean)
 activate umDAO
-umDAO->umDAO : String query = $"INSERT INTO users (userName, email, password, enabled)\n    VALUES ({userName}, {email}, {password}, {isEnabled})"
-umDAO->umStore : INSERT into users (userName, email, password, enabled)\n    VALUES (userName, email, password, isEnabled)
+umDAO->umDAO : String query = $"UPDATE users\n    SET email = {email}, password = {password}, enabled = {isEnabled}\n    WHERE username = {username}"
+umDAO->umStore : UPDATE users\n    SET email = email, password = password, enabled = isEnabled\n    WHERE username = username
 activate umStore
-umStore->umStore : Insert values into table
+umStore->umStore : Update row in table
 note right of umStore:Latest data is not written to the data store
 
 #return chain
@@ -96,7 +96,7 @@ logger-->manager : True : Boolean
 deactivate logger
 note left of manager:The response should occur within 5 seconds of invocation.
 note left of manager:<size:20>↓
-manager-->entry: True : Boolean
+manager-->entry: False : Boolean
 deactivate manager
 entry-->cmd : Single UM Operation Successful
 deactivate entry
