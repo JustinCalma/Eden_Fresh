@@ -1,4 +1,4 @@
-title User Management Fail - Create Account - Timeout
+title User Management Success Scenario - Create Account
 
 #participant "System Administrator" as admin
 participant "Command Line" as cmd
