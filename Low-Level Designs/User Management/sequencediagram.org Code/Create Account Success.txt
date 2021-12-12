@@ -1,34 +1,47 @@
 title User Management Success Scenario - Create Account
 
 #participant "System Administrator" as admin
-participant "umEntry : umEntry" as entry
+participant "Command Line" as cmd
+participant "Main : umEntry" as entry
+participant "umManager : umManager" as manager
 participant "umService : umService" as service
-participant "umDAO : (MSSQLUMGateway)" as umDAO
+participant "umDAO : MSSQLUMGateway" as umDAO
 participant "SQL Server" as umStore
 participant "umLogger : LogWriter" as logger
 participant "umAuthentication : Authentication" as authN
 participant "umAuthorization : Authorization" as authZ
 
+activate cmd
 
+cmd->entry : User has selected "Create Account"
 activate entry
+entry->entry : Validate input (request : int)
 
-entry->authZ : umAuthentication = new Authentication()
+entry->manager : manager = new umManager(userID : String)
 
-activate authZ
-authZ->authZ : Constructor
-authZ-->entry : return umAuthentication
-deactivate authZ
-
-entry->authN : umAuthorization = new umAuthentication(umAuthentication : Authenication) 
+activate manager
+manager->authN : umAuthentication = new Authentication()
 activate authN
 authN->authN : Constructor
-authN->authN : Authenticate User
-authN->authZ : Authorize User
-activate authZ
-authZ->authN : Response
-deactivate authZ
-authN-->entry : return umAuthorizaiton
+authN-->manager : return umAuthentication
 deactivate authN
+
+manager->authZ : new umAuthorization(umAuthentication : Authentication, userID : String)
+activate authZ
+authZ->authZ : Constructor
+authZ-->manager : return umAuthentication
+
+authZ->authN : AuthenticateUser(userID : String)
+activate authN
+authN->authZ : True : Boolean
+deactivate authN
+
+authZ->authZ : AuthorizeUser(userID : String)
+authZ-->manager : True : Boolean
+deactivate authZ
+
+manager-->entry : return manager
+deactivate manager
 
 entry->logger : umLogger = new LogWriter()
 activate logger
@@ -48,22 +61,17 @@ service->service : Constructor
 service-->entry : return service
 deactivate service
 
-
-
-[->entry : User has selected "Create Account"
-entry->entry : Validate input
-
-entry->service : umService.createAccount()
+entry->service : umService.CreateAccount(userName : String, email : String, password : String)
 activate service
-service->umDAO : umDAO.writeToDataStore(userName : String, email : String, password : String)
+service->umDAO : umDAO.WriteToDataStore(userName : String, email : String, password : String)
 activate umDAO
-umDAO->umDAO : Build SQL query from writeToDataStore() args; sanitize message for SQL insertion
-umDAO->umStore : INSERT into "TABLE" VALUES (userName, email, password) OUTPUT INSERTED*
+umDAO->umDAO : String query = $"INSERT INTO users (userName, email, password)\n    VALUES ({userName}, {email}, {password})"
+umDAO->umStore : INSERT into users VALUES (userName, email, password)
 activate umStore
 umStore->umStore : Insert values into table
-umStore-->umDAO : Inserted Row
+umStore-->umDAO : 1 : int
 deactivate umStore
-umDAO->umDAO : Validate inserted values with writeToDataStore arugments
+
 
 umDAO-->service : True : Boolean
 deactivate umDAO
@@ -71,14 +79,16 @@ deactivate umDAO
 service-->entry : True : Boolean
 deactivate service
 note left of entry:The response should occur within 5 seconds of invocation.
-entry-->[ : Single UM Operation Successful
+note left of entry:<size:20>↓
+entry-->cmd : Single UM Operation Successful
 
-entry-->logger : umLogger.write(userID : int, logLevel : enum, category : enum, message : String)
+entry-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->entry : True : Boolean
 deactivate logger
 
+deactivate cmd
 
 # NOTES: 
 #	- Implement AUTHN & AUTHZ
