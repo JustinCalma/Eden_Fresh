@@ -107,11 +107,13 @@ deactivate logs
 reader-->service:true:Boolean
 deactivate reader
 
+
 #function verification
-note right of service: countLogsArchived() is a functions return number of read logs
+note right of service: CountLogsArchived() is a functions return number of read logs
 note right of service: <size:15>↓
-service->service: int logsArchived = countLogsArchived(); 
+service->service: int logsArchived = CountLogsArchived(); 
 service-->manager:logsArchived : int
+note right of manager:<size:15>↑
 note right of manager:Archival process took longer than 60 seconds to complete upon invocation.
 deactivate service
 
