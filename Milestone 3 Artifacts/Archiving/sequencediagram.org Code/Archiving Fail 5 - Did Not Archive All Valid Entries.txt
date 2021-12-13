@@ -1,0 +1,134 @@
+title Archiving Fail - Did Not Archive All Valid Entries
+
+participant "entryPoint : EntryPoint" as control
+participant "archivingManager : ArchivingManager" as manager
+participant "archivingService : ArchivingService" as service
+participant "logGateway : SQLLogGateway" as reader
+participant "SQL Server" as logs
+participant "archiveGateway : CompressingFileSystemLogGateway" as writer
+participant "Web Host File System" as archive
+participant "logger : LogWriter" as logger
+
+#Instantiations (Dependency injection)
+activate control
+control->logger:new LogWriter()
+activate logger
+logger->logger:Constructor
+logger-->control:LogWriter instance
+deactivate logger
+control->reader:new SQLLogGateway(String serverConnectionString)
+activate reader
+reader->reader:Constructor
+reader-->control:SQLLogGateway instance
+deactivate reader
+control->writer:new CompressingFileSystemLogGateway(String fileLocation)
+activate writer
+writer->writer:Constructor
+writer-->control:CompressingFileSystemLogGateway instance
+deactivate writer
+control->service:new ArchivingService(logGateway : ILogGateway, archiveGateway : ILogGateway)
+activate service
+service->service:Constructor
+service-->control:ArchivingService instance
+deactivate service
+control->manager:new ArchivingManager(archivingService : ArchivingService, logger : LogWriter)
+activate manager
+manager->manager:Constructor
+manager-->control:ArchivingManager instance
+deactivate manager
+
+#begin infinite loop
+control-->manager:Manager.BeginAsync()
+activate manager
+note left of manager: <size:15>↑
+note left of manager:Manager.begin() begins an endless loop calling waitForArchive()
+
+#await archive time
+manager->manager: WaitForArchive()
+note right of manager: <size:15>↑
+note right of manager: WaitForArchive() waits until 00:00:00 AM local time\non an unspecified day then calls the next method.
+
+#begin service
+manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
+activate service
+service->service:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
+note right of service: Get timestamp of date 30 days ago 
+note right of service:<size:15>↓
+service->service: String TimeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
+
+#begin querying log database
+service->reader:logGateway.ReadLogsWhere(columnName : String, comparator : Enum, value : String)
+activate reader
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp
+note right of reader: <size:15>↓
+reader->reader: String selectQuery = "Select  * From readLogsWhere where timeStamp =" + timestamp
+reader->logs:SELECT statement
+activate logs
+logs->logs: selectQuery runtime
+logs-->reader:Selected rows
+note left of logs:<size:15>↑
+note left of logs: It did not selected all the files.
+deactivate logs
+
+reader-->service:readLogs : DataTable
+deactivate reader
+
+#write queried logs to file
+service->writer:archiveGateway.WriteLogs(logs : DataTable)
+activate writer
+writer->archive:New .txt file
+archive-->writer:Success
+activate archive
+note right of writer:Loop through readLogs rows. n will be number of logs. 
+note left of archive: <size:15>↓
+
+note left of archive:for (i=0; i < n; i++)
+note left of archive: <size:15>↓
+loop
+writer->archive:Write each iterated row of readLogs to .txt file
+archive-->writer:Success
+end
+writer->archive:Compress .txt file to .zip file
+note left of archive:<size:15>↑
+note left of archive: .zip file is saved to file system
+archive-->writer:Success
+note right of writer:<size:15>↑
+note right of writer: Did not save all the files
+deactivate archive
+writer-->service:true : Boolean
+deactivate writer
+
+#delete archived logs
+service->reader:logGateway.DeleteLogsWhere(columnName : String, comparator : Enum, value : String)
+activate reader
+note right of reader:Build SQLquery with timestamp,\n  timestamp (?) = a date 30 days before from today runtime  timestamp 
+note right of reader: <size:15>↓
+reader->reader: String deleteQuery = "Delete * From readLogsWhere where timeStamp = " + timestamp
+reader->logs:DELETE statement
+activate logs
+logs->logs: deleteQuery rutime
+logs-->reader:Number of deleted row
+deactivate logs
+reader-->service:true:Boolean
+deactivate reader
+
+#function verification
+note right of service: CountLogsArchived() is a functions return number of read logs
+note right of service: <size:15>↓
+service->service: int logsArchived = CountLogsArchived(); 
+service->service:stopwatch.Stop()
+service->service:if(stopwatch.ElapsedMilliseconds > 5000)
+service-->manager:logsArchived : int
+note right of manager:<size:15>↑
+note right of manager:Archival process took 60 seconds to complete upon invocation.
+deactivate service
+
+#perform logging
+manager-->logger: logger.Write(userID : int, logLevel : enum, category : enum, message : string)
+activate logger
+logger->logger:Refer to the "Logging Success Scenario" diagram
+logger-->manager: true : boolean
+deactivate logger
+
+#loop continues
+manager->manager:WaitForArchive()

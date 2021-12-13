@@ -1,0 +1,60 @@
+title Logging Success Scenario
+
+participant "Any Feature" as feature
+participant "logWriter : LogWriter" as writer
+participant "logGateway : MSSQLLogGateway" as dao
+participant "SQL Server" as db
+
+note left of db:The data store is online, accessible to the system,\nand has storage capacity for a log entry.\nNo users can call an UPDATE statement\nover the table containing the entry being inserted.
+#instantiation/constructors
+activate feature
+feature->dao:new SQLLogGateway(connectionString : String)
+activate dao
+dao->dao:Constructor
+dao-->feature:SQLLogGateway instance
+deactivate dao
+feature->writer:new LogWriter(logConnection : LogGateway)
+activate writer
+writer->writer:Constructor
+writer-->feature:LogWriter instance
+deactivate writer
+
+#begin functionality
+feature-->writer: logWriter.Write(userID : Integer, logLevel : Enum, category : Enum, message : String)
+activate writer
+note left of writer:<size:20>↑
+note left of writer: System-initiated logs have a user ID 0.\nUser-initiated logs have a nonzero user ID equal to the initiating user's.
+writer->writer:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
+
+#logWriter begins
+writer->writer:String timeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
+writer->dao:writeSuccessful = logConnection.WriteLogs(userID : String, timeDate : String, logLevel : Enum, category : Enum, message : String)
+activate dao
+
+#dao begins
+dao->dao:String query = $"INSERT INTO logs (userid, timedate, level, category, message)\n    VALUES ({userID}, {timeDate}, {logLevel}, {category}, {message})"
+dao->db:INSERT INTO tableName (userid, timedate, level, category, message)\n    VALUES (userID, timeDate, logLevel, category, message)
+activate db
+db->db:Insert values into table
+
+#returns
+db-->dao:1 : Integer
+deactivate db
+dao-->writer: true : Boolean
+deactivate dao
+writer->writer:stopwatch.Stop()
+writer->writer:return (writeSuccessful && stopwatch.ElapsedMilliseconds <= 5000)
+note left of writer:The response should occur within 5 seconds of invocation.
+note left of writer:<size:20>↓
+writer-->feature: true : Boolean
+deactivate writer
+deactivate feature
+
+#Blockers:
+#How to enforce the time requirement?
+#    https://softwareengineering.stackexchange.com/questions/209896/call-a-function-and-never-wait-for-it-in-c
+#    From what I gather, start a timer then perform the functionality async. If the timer completes, throw an exception - if the functionality returns, return true.
+#        If we go this route, how do we handle catching exceptions from the functionality?
+#        
+#How to enforce asynchronous execution?
+#    
