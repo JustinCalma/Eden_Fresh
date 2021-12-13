@@ -57,7 +57,7 @@ deactivate manager
 
 
 #begin functionality
-entry->manager : umService.determineOperation(fileExtract : File)
+entry->manager : umManager.DetermineOperation(fileExtract : File)
 activate manager
 
 #authorize user before proceeding to functionality
@@ -71,25 +71,27 @@ deactivate authN
 authZ-->manager : True : Boolean
 deactivate authZ
 
+manager->manager:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
+
 note right of manager : Loop through fileExtract. n will represent the number of lines within the file
 note right of manager : for(i = 0; i < n; i+ +)
 note right of manager:<size:20>↓
 loop
-manager->manager : Store each element in every iterated row of fileExtract \ninto the arrays userName, email, password 
+manager->manager : Store each element in every iterated row of fileExtract \ninto the arrays userName, email, password, query 
 end
 
 #authorization complete, continue to functionality
-manager->service : umService.CreateAccount(userName : String[], email : String[], password : String[], isEnabled : Boolean)
+manager->service : umService.DetermineOperation(query, userName : String[], email : String[], password : String[], isEnabled : Boolean[])
 activate service
-service->umDAO : umDAO.WriteToDataStore(userName : String[], email : String[], password : String[], isEnabled : Boolean)
+service->umDAO : umDAO.WriteToDataStore(query : String[], userName : String[], email : String[], password : String[], isEnabled : Boolean[])
 activate umDAO
 
 note right of umDAO : Loop and build the SQL queries depending on operation \n$"INSERT INTO users (userName, email, password, enabled) VALUES ({userName}, {email}, {password}, {isEnabled})" \n$"DELETE FROM users WHERE username = {userName}, email = {email}, password = {password}" \n$"UPDATE users SET email = {email}, password = {password}, enabled = {isEnabled} WHERE username = {username}"
+note right of umDAO : n will represent the number of lines within the file
 note right of umDAO : for(i = 0; i < n/100; i+ +)
 note right of umDAO : <size:20>↓
 loop
 umDAO->umDAO : Build SQL queries from writeToDataStore() args \nand batch 100 queries together
-end 
 umDAO->umStore : Send batched queries to SQL Server
 activate umStore
 umStore->umStore : Insert/DELETE/UPDATE values into table
@@ -97,10 +99,15 @@ note right of umStore : Latest data is not written to the data store
 
 #return chain
 umStore-->umDAO : Error Code
+end
 deactivate umStore
 umDAO-->service : False : Boolean
 deactivate umDAO
 service-->manager : False : Boolean
+
+manager->manager:stopwatch.Stop()
+manager->manager:if(stopwatch.ElapsedMilliseconds > 60000) return False : Boolean;\nelse return True : Boolean;
+
 deactivate service
 #before completing functionality, perform logging
 manager-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
@@ -108,10 +115,10 @@ activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->manager : True : Boolean
 deactivate logger
+note left of manager:The response should occur within 60 seconds of invocation.
+note left of manager:<size:20>↓
 manager-->entry: False : Boolean
 deactivate manager
-note left of entry:The response should occur within 60 seconds of invocation.
-note left of entry:<size:20>↓
 entry-->cmd : No system message or an inaccurate system message is shown
 deactivate entry
 deactivate cmd
