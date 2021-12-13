@@ -20,17 +20,17 @@ writer-->feature:LogWriter instance
 deactivate writer
 
 #begin functionality
-feature-->writer: logWriter.Write(userID : Integer, logLevel : Enum, category : Enum, message : String)
+feature-->writer: logWriter.Write(userID : Integer, log : LogLevel, category : Category, message : String)
 activate writer
 note left of writer:<size:20>↑
-note left of writer: System-initiated logs have a user ID 0.\nUser-initiated logs have a nonzero user ID equal to the initiating user's.
+note left of writer: System-initiated logs have a user ID 0.\nUser-initiated logs have a nonzero user ID equal to the initiating user's.\nLogLevel is an enum with values {Info, Debug, Warning, Error}\nCategory is an enum with values {View, Business, Server, Data, DataStore}
 writer->writer:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
 
 #logWriter begins
 writer->writer:String timeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
 note right of writer:<size:20>↑
 note right of writer:The computer executing this function\nhas its system clock set to a different timezone,\nresulting in an inaccurate time stamp being generated.
-writer->dao:writeSuccessful = logConnection.WriteLogs(userID : String, timeDate : String, logLevel : Enum, category : Enum, message : String)
+writer->dao:writeSuccessful = logConnection.WriteLogs(userID : String, timeDate : String, log : LogLevel, category : Category, message : String)
 activate dao
 
 #dao begins
