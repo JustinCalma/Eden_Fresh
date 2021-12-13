@@ -51,6 +51,7 @@ note right of manager: WaitForArchive() waits waits until 00:00:00 AM local time
 #begin service
 manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
 activate service
+service->service:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
 note right of service: Get timestamp of date 30 days ago 
 note right of service:<size:15>↓
 service->service: String TimeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
@@ -107,11 +108,15 @@ deactivate logs
 reader-->service:true:Boolean
 deactivate reader
 
+
 #function verification
-note right of service: countLogsArchived() is a functions return number of read logs
+note right of service: CountLogsArchived() is a functions return number of read logs
 note right of service: <size:15>↓
-service->service: int logsArchived = countLogsArchived(); 
+service->service: int logsArchived = CountLogsArchived(); 
+service->service:stopwatch.Stop()
+service->service:if(stopwatch.ElapsedMilliseconds > 5000)
 service-->manager:logsArchived : int
+note right of manager:<size:15>↑
 note right of manager:Archival process took longer than 60 seconds to complete upon invocation.
 deactivate service
 

@@ -51,6 +51,7 @@ note right of manager: WaitForArchive() waits waits until 00:00:00 AM local time
 #begin service
 manager->service:archivingService.ArchiveData(minimumAge : int, tableName : String)
 activate service
+service->service:Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
 note right of service: Get timestamp of date 30 days ago 
 note right of service:<size:15>↓
 service->service: String TimeDate = DateTime.Now.ToString("YYYY-MM-DD HH:MM:SS")
