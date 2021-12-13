@@ -71,7 +71,8 @@ authZ-->manager : True : Boolean
 deactivate authZ
 
 #authorization complete, continue to functionality
-manager->service : umService.UpdateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
+manager->manager: Stopwatch stopwatch = new Stopwatch();\nstopwatch.Start();
+manager->service : operationSuccessful = umService.UpdateAccount(userName : String, email : String, password : String, isEnabled : Boolean)
 activate service
 service->umDAO : umDAO.UpdateDataStore(userName : String, email : String, password : String, isEnabled : Boolean)
 activate umDAO
@@ -86,12 +87,15 @@ deactivate umStore
 umDAO-->service : True : Boolean
 deactivate umDAO
 service-->manager : True : Boolean
+
 deactivate service
 #before completing functionality, perform logging
+manager->manager: stopwatch.Stop()
 manager-->logger : umLogger.Write(userID : int, logLevel : enum, category : enum, message : String)
 activate logger
 logger->logger : Refer to the Logging Sequence Diagram
 logger-->manager : True : Boolean
+manager->manager:return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000)
 deactivate logger
 note left of manager:The response occurs more than 5 seconds after invocation.
 note left of manager:<size:20>↓
