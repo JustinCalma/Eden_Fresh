@@ -217,17 +217,21 @@ reader-->service:deletedLogs : DataSet
 deactivate reader
 
 #function verification
-service->service:Verify that deletedLogs matches readLogs
-service->service:Get number of logs archived
+note right of service: CountLogsArchived() is a functions return number of read logs
+note right of service: <size:15>↓
+service->service: int logsArchived = CountLogsArchived(); 
 service-->manager:logsArchived : int
+note right of manager:<size:15>↑
+note right of manager:Archival process took 60 seconds to complete upon invocation.
 deactivate service
 
 #perform logging
-manager-->logger: logger.write(userID : int, logLevel : enum, category : enum, message : string)
+manager-->logger: logger.Write(userID : int, logLevel : enum, category : enum, message : string)
 activate logger
 logger->logger:Refer to the "Logging Success Scenario" diagram
 logger-->manager: true : boolean
 deactivate logger
 
 #loop continues
-manager->manager:waitForArchive()
+manager->manager:WaitForArchive()
+
