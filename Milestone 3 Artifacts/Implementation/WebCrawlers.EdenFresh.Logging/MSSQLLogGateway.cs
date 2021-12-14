@@ -10,7 +10,9 @@ namespace WebCrawlers.EdenFresh.Logging
 {
     class MSSQLLogGateway : ILogGateway
     {
-        private string connectionString;
+        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=logging;Integrated Security=True;Pooling=False";
+        private int logId;
+        private Random rnd = new Random();
 
         public MSSQLLogGateway(string connection)
         {
@@ -96,9 +98,52 @@ namespace WebCrawlers.EdenFresh.Logging
             }
         }
 
-        public bool WriteLog(int userId, DateTime timeStamp, LogLevel logLevel, Category category, string message)
+        public Boolean WriteLog(int userId, DateTime timeStamp, LogWriter.LogLevel logLevel, LogWriter.Category category, string message)
         {
-            throw new NotImplementedException();
+
+            int value = rnd.Next(100000, 999999);
+            try
+            {
+                SqlConnection con = new SqlConnection(connectionString);
+                string query = "INSERT INTO LOGGER (LogId, UserId, TimeDate, LogLevel, Category, Message) VALUES (@logId, @userId, @timeDate, @logLevel, @category, @message)";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@logId", logId);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@timeDate", timeStamp);
+                cmd.Parameters.AddWithValue("@logLevel", logLevel);
+                cmd.Parameters.AddWithValue("@category", category);
+                cmd.Parameters.AddWithValue("@message", message);
+                try
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine("Log Records Inserted Successfully");
+                    return true;
+                }
+                catch (SqlException ex)
+                {
+                    if (ex.Number == 2627)//SQL Duplicate primary key exception 
+                    {
+                        Console.WriteLine("Duplicate Key...reassigning key");
+                        logId = value;
+                        WriteLog(userId, timeStamp, logLevel, category, message);
+                        return false;
+                    }
+                }
+                finally
+                {
+                    con.Close();
+                    Console.ReadKey();
+
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+
+            }
         }
     }
 }

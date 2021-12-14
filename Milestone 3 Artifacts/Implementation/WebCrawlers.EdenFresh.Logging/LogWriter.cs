@@ -3,10 +3,14 @@ using System.Diagnostics;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
-    public enum LogLevel { Info, Debug, Warning, Error }
-    public enum Category { View, Business, Server, Data, DataStore }
     class LogWriter
     {
+        public enum LogLevel { Info, Debug, Warning, Error }
+        public enum Category { View, Business, Server, Data, DataStore }
+        public LogLevel logLevel { get; set; }
+        public Category category { get; set; }
+
+
         private Stopwatch stopwatch;
         private ILogGateway logConnection;
       
