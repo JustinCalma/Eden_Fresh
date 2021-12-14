@@ -18,12 +18,7 @@ namespace WebCrawlers.EdenFresh.Logging
             throw new NotImplementedException();
         }
 
-        public bool UpdateLog(int logId, LogWriter replacementLog)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Write(int userId, DateTime timeStamp, LogLevel logLevel, Category category, string message)
+        public bool WriteLog(int userId, DateTime timeStamp, LogLevel logLevel, Category category, string message)
         {
             throw new NotImplementedException();
         }
