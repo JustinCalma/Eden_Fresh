@@ -16,11 +16,12 @@ namespace WebCrawlers.EdenFresh.Logging
             this.logConnection = conn;
         }
 
-        public Boolean Write(int userId, DateTime timeStamp, LogLevel logLevel, Category category, string message)
+        public Boolean Write(int userId, LogLevel logLevel, Category category, string message)
         {
             stopwatch.Restart();
             stopwatch.Start();
-            bool writeSuccessful = logConnection.WriteLog(userId, timeStamp, logLevel, category, message);
+            DateTime timestamp = DateTime.Now;
+            bool writeSuccessful = logConnection.WriteLog(userId, timestamp, logLevel, category, message);
             stopwatch.Stop();
             return (writeSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
         }
