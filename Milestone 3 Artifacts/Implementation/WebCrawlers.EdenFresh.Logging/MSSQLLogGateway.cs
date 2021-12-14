@@ -27,7 +27,7 @@ namespace WebCrawlers.EdenFresh.Logging
             try
             {
                 conn = new SqlConnection(connectionString);
-                string query = "Select * from Logger where ";
+                string query = "SELECT * FROM Logger WHERE ";
                 switch (compare)
                 {
                     case Comparator.LESS:
