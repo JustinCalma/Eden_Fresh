@@ -3,11 +3,10 @@ using System.Diagnostics;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
+    public enum LogLevel { Info, Debug, Warning, Error }
+    public enum Category { View, Business, Server, Data, DataStore }
     class LogWriter
     {
-        public enum LogLevel { Info, Debug, Warning, Error }
-        public enum Category { View, Business, Server, Data, DataStore }
-
         private Stopwatch stopwatch;
         private ILogGateway logConnection;
       
@@ -21,7 +20,7 @@ namespace WebCrawlers.EdenFresh.Logging
         {
             stopwatch.Restart();
             stopwatch.Start();
-            bool writeSuccessful = logConnection.Write(userId, timeStamp, logLevel,category,message);
+            bool writeSuccessful = logConnection.Write(userId, timeStamp, logLevel, category, message);
             stopwatch.Stop();
             return (writeSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
         }
