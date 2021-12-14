@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
-    class MSSQLLogGateway : ILogGateway
+    public class MSSQLLogGateway : ILogGateway
     {
         private string connectionString;
         private int logId;
@@ -61,7 +61,7 @@ namespace WebCrawlers.EdenFresh.Logging
             try
             {
                 conn = new SqlConnection(connectionString);
-                string query = "SELECT * FROM Logger WHERE ";
+                string query = $"SELECT * FROM Logger WHERE {columnName}";
                 switch (compare)
                 {
                     case Comparator.LESS:
@@ -80,6 +80,7 @@ namespace WebCrawlers.EdenFresh.Logging
                 conn.Open();
                 SqlCommand command = new SqlCommand(query, conn);
                 command.Parameters.AddWithValue("@value", value);
+                Console.WriteLine(command.CommandText);
                 SqlDataReader reader = command.ExecuteReader();
                 DataTable table = new DataTable();
                 table.Load(reader);
