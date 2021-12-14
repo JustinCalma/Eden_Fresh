@@ -16,9 +16,43 @@ namespace WebCrawlers.EdenFresh.Logging
         {
             this.connectionString = connection;
         }
-        public bool DeleteLogsWhere(string columnName, Comparator compare, string value)
+        public int DeleteLogsWhere(string columnName, Comparator compare, string value)
         {
-            throw new NotImplementedException();
+            SqlConnection conn = null;
+            try
+            {
+                conn = new SqlConnection(connectionString);
+                string query = "DELETE * FROM Logger WHERE ";
+                switch (compare)
+                {
+                    case Comparator.LESS:
+                        query += "< @value";
+                        break;
+                    case Comparator.GREATER:
+                        query += "> @value";
+                        break;
+                    case Comparator.EQUAL:
+                        query += "= @value";
+                        break;
+                    case Comparator.NOT:
+                        query += "<> @value";
+                        break;
+                }
+                conn.Open();
+                SqlCommand command = new SqlCommand(query, conn);
+                command.Parameters.AddWithValue("@value", value);
+                int deletedRows = command.ExecuteNonQuery();
+                return deletedRows;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 0;
+            }
+            finally
+            {
+                if (conn != null) conn.Close();
+            }
         }
 
         public DataTable ReadLogsWhere(string columnName, Comparator compare, string value)

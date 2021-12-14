@@ -7,6 +7,6 @@ namespace WebCrawlers.EdenFresh.Logging
     {
         public Boolean WriteLog(int userId, DateTime timeStamp, LogLevel logLevel, Category category, string message);
         public DataTable ReadLogsWhere(string columnName, Comparator compare, string value);
-        public Boolean DeleteLogsWhere(string columnName, Comparator compare, string value);
+        public int DeleteLogsWhere(string columnName, Comparator compare, string value);
     }
 }
