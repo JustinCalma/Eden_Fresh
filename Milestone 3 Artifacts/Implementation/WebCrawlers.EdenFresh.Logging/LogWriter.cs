@@ -5,7 +5,7 @@ namespace WebCrawlers.EdenFresh.Logging
 {
     public enum LogLevel { Info, Debug, Warning, Error }
     public enum Category { View, Business, Server, Data, DataStore }
-    class LogWriter
+    public class LogWriter
     {
         private Stopwatch stopwatch;
         private ILogGateway logConnection;
