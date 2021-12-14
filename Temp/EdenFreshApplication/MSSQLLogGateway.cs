@@ -1,6 +1,4 @@
-﻿
-using System.Data.SqlClient;
-
+﻿using System.Data.SqlClient;
 
 namespace EdenFreshApplication
 {
@@ -105,7 +103,7 @@ namespace EdenFreshApplication
             }
         }
       
-        public Boolean UpdateLog(int logId, EdenFresh.LogWriter replacementLog)
+        public Boolean UpdateLog(int logId, LogWriter replacementLog)
         {
             try
             {
