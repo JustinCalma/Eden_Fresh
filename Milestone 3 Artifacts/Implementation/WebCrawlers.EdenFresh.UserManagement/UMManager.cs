@@ -1,16 +1,15 @@
-﻿
-using System.Diagnostics;
-
+﻿using System.Diagnostics;
 
 namespace WebCrawlers.EdenFresh.UserManagement
 {
     internal class UMManager
     {
         private Stopwatch stopwatch;
-        private UMService umService = new UMService();
-        public UMManager()
+        private UMService umService;
+        public UMManager(String connectionString)
         {
             this.stopwatch = new Stopwatch();
+            umService = new UMService(connectionString);
         }
 
         public Boolean CreateAccount(String userName, String email, String password, Boolean isEnabled)

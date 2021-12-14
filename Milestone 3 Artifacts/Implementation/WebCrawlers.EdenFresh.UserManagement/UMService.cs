@@ -9,12 +9,15 @@ namespace WebCrawlers.EdenFresh.UserManagement
     class UMService
     {
         private String connectionString;
-        MSSQLUMGateway umDao = new MSSQLUMGateway(@"Data Source=.\SQLEXPRESS;Initial Catalog=logging;Integrated Security=True;Pooling=False");
+        MSSQLUMGateway umDao;
+
+        public UMService(String conectionString)
+        {
+            umDao = new MSSQLUMGateway(conectionString);
+        }
         public Boolean CreateAccount(String userName, String email, String password, Boolean isEnabled)
         {
-            umDao.WriteToDataStore(userName, email, password, isEnabled);
-            return true;
-
+            return umDao.WriteToDataStore(userName, email, password, isEnabled);
         }
     }
 }
