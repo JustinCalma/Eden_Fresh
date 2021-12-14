@@ -14,7 +14,7 @@ namespace WebCrawlers.EdenFresh.Logging
         public MSSQLLogGateway(string connection)
         {
             this.connectionString = connection;
-            logId = rnd.Next();
+            logId = rnd.Next(100000, 999999);
         }
 
         public Boolean WriteLog(int userId, DateTime timeStamp, LogWriter.LogLevel logLevel, LogWriter.Category category, string message)
@@ -120,12 +120,7 @@ namespace WebCrawlers.EdenFresh.Logging
                     }
                     else
                     {
-                        do
-                        {
-                            Console.WriteLine("Reading?");
-                            Console.WriteLine(logId + " " + reader[0].ToString() + " " + reader[1].ToString() + " " + reader[2].ToString() + " " + reader[3].ToString() + " " + reader[4].ToString() + " " + reader[5].ToString());
-                        }
-                        while (reader.Read());
+                        Console.WriteLine(logId + " " + reader[0].ToString() + " " + reader[1].ToString() + " " + reader[2].ToString() + " " + reader[3].ToString() + " " + reader[4].ToString() + " " + reader[5].ToString());
                         Console.WriteLine("Logger Records read Successfully");
                         return true;
                     }
