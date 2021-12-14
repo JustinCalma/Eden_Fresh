@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
-    public class MSSQLLogGateway : ILogGateway
+    class MSSQLLogGateway : ILogGateway
     {
         private string connectionString;
         private int logId;
@@ -15,86 +15,6 @@ namespace WebCrawlers.EdenFresh.Logging
         {
             this.connectionString = connection;
             logId = rnd.Next();
-        }
-        public int DeleteLogsWhere(string columnName, Comparator compare, string value)
-        {
-            SqlConnection conn = null;
-            try
-            {
-                conn = new SqlConnection(connectionString);
-                string query = "DELETE * FROM Logger WHERE ";
-                switch (compare)
-                {
-                    case Comparator.LESS:
-                        query += "< @value";
-                        break;
-                    case Comparator.GREATER:
-                        query += "> @value";
-                        break;
-                    case Comparator.EQUAL:
-                        query += "= @value";
-                        break;
-                    case Comparator.NOT:
-                        query += "<> @value";
-                        break;
-                }
-                conn.Open();
-                SqlCommand command = new SqlCommand(query, conn);
-                command.Parameters.AddWithValue("@value", value);
-                int deletedRows = command.ExecuteNonQuery();
-                return deletedRows;
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return 0;
-            }
-            finally
-            {
-                if (conn != null) conn.Close();
-            }
-        }
-
-        public DataTable ReadLogsWhere(string columnName, Comparator compare, string value)
-        {
-            SqlConnection conn = null;
-            try
-            {
-                conn = new SqlConnection(connectionString);
-                string query = $"SELECT * FROM Logger WHERE {columnName}";
-                switch (compare)
-                {
-                    case Comparator.LESS:
-                        query += "< @value";
-                        break;
-                    case Comparator.GREATER:
-                        query += "> @value";
-                        break;
-                    case Comparator.EQUAL:
-                        query += "= @value";
-                        break;
-                    case Comparator.NOT:
-                        query += "<> @value";
-                        break;
-                }
-                conn.Open();
-                SqlCommand command = new SqlCommand(query, conn);
-                command.Parameters.AddWithValue("@value", value);
-                Console.WriteLine(command.CommandText);
-                SqlDataReader reader = command.ExecuteReader();
-                DataTable table = new DataTable();
-                table.Load(reader);
-                return table;
-            }
-            catch(SqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new DataTable ();
-            }
-            finally
-            {
-                if (conn != null) conn.Close();
-            }
         }
 
         public Boolean WriteLog(int userId, DateTime timeStamp, LogWriter.LogLevel logLevel, LogWriter.Category category, string message)
@@ -144,6 +64,93 @@ namespace WebCrawlers.EdenFresh.Logging
 
             }
         }
+        public Boolean DeleteLog(int logId)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(connectionString);
+
+                string query = "DELETE FROM logger WHERE logId = @id";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@id", logId);
+
+                try
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine("Log Records Deleted Successfully");
+                    return true;
+
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("MSSQLLogGateway class Error: " + ex.ToString());
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                    Console.ReadKey();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public Boolean ReadLog(int logId)
+        {
+            try
+            {
+                SqlConnection con = new SqlConnection(connectionString);
+                string query = "Select * from Logger where LogId = @id";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@id", logId);
+                try
+                {
+                    con.Open();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (!reader.Read())
+                    {
+                        Console.WriteLine("Not Reading");
+                        return false;
+
+                    }
+                    else
+                    {
+                        do
+                        {
+                            Console.WriteLine("Reading?");
+                            Console.WriteLine(logId + " " + reader[0].ToString() + " " + reader[1].ToString() + " " + reader[2].ToString() + " " + reader[3].ToString() + " " + reader[4].ToString() + " " + reader[5].ToString());
+                        }
+                        while (reader.Read());
+                        Console.WriteLine("Logger Records read Successfully");
+                        return true;
+                    }
+                    
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("Error: " + ex.ToString());
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                    Console.ReadKey();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return false;
+
+            }
+        }
+
+        
     }
 }
 

@@ -13,7 +13,7 @@ namespace WebCrawlers.EdenFresh.Logging
 
 
         private Stopwatch stopwatch;
-        private MSSQLLogGateway logConnection;
+        private MSSQLLogGateway logConnection = new MSSQLLogGateway(@"Data Source=.\SQLEXPRESS;Initial Catalog=logging;Integrated Security=True;Pooling=False");
       
         public LogWriter() 
         {
