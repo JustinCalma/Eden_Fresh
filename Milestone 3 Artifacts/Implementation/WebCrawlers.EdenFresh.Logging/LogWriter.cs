@@ -13,11 +13,11 @@ namespace WebCrawlers.EdenFresh.Logging
 
 
         private Stopwatch stopwatch;
-        private MSSQLLogGateway logConnection = new MSSQLLogGateway(@"Data Source=.\SQLEXPRESS;Initial Catalog=logging;Integrated Security=True;Pooling=False");
-      
-        public LogWriter() 
+        private ILogGateway logConnection; 
+        public LogWriter(ILogGateway logConnection) 
         {
             this.stopwatch = new Stopwatch();
+            this.logConnection = logConnection;
         }
 
         public Boolean Write(int userId, LogLevel logLevel, Category category, string message)
