@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace WebCrawlers.EdenFresh.Logging
 {
     class MSSQLLogGateway : ILogGateway
     {
-        private string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=logging;Integrated Security=True;Pooling=False";
+        private string connectionString;
         private int logId;
         private Random rnd = new Random();
 
         public MSSQLLogGateway(string connection)
         {
             this.connectionString = connection;
+            logId = rnd.Next();
         }
         public int DeleteLogsWhere(string columnName, Comparator compare, string value)
         {
@@ -147,3 +145,4 @@ namespace WebCrawlers.EdenFresh.Logging
         }
     }
 }
+

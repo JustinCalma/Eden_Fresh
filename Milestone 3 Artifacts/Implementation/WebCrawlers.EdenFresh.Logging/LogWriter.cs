@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Diagnostics;
 
 namespace WebCrawlers.EdenFresh.Logging
@@ -12,12 +13,11 @@ namespace WebCrawlers.EdenFresh.Logging
 
 
         private Stopwatch stopwatch;
-        private ILogGateway logConnection;
+        private MSSQLLogGateway logConnection;
       
-        public LogWriter(ILogGateway conn) 
+        public LogWriter() 
         {
             this.stopwatch = new Stopwatch();
-            this.logConnection = conn;
         }
 
         public Boolean Write(int userId, LogLevel logLevel, Category category, string message)

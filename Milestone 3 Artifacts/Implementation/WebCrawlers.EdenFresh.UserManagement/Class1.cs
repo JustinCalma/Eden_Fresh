@@ -1,7 +1,12 @@
 ﻿namespace WebCrawlers.EdenFresh.UserManagement
 {
-    public class Class1
+    class Class1
     {
+        static void Main(String[] args)
+        {
+            Console.WriteLine("Test");
 
+
+        }
     }
 }
