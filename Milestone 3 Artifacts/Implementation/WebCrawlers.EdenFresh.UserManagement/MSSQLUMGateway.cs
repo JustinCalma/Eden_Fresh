@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace WebCrawlers.EdenFresh.UserManagement
 {
-    class MSSQLUMGateway
+    class MSSQLUMGateway : IUserGateway
     {
         private string connectionString;
         private int userId;
@@ -14,7 +14,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
             this.connectionString = connection;
             userId = rnd.Next(100000, 999999);
         }
-        public Boolean WriteToDataStore(String username, String email, String password, Boolean isEnabled)
+        public Boolean WriteToDataStore(string username, string email, string password, bool isEnabled)
         {
             int value = rnd.Next(100000, 999999);
             try
@@ -57,6 +57,16 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 return false;
 
             }
+        }
+
+        public bool DeleteFromDataStore(string userID, string email, string password, bool isEnabled)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateDataStore(string userID, string email, string password, bool isEnabled)
+        {
+            throw new NotImplementedException();
         }
     }
 }
