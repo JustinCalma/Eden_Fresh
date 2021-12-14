@@ -23,9 +23,45 @@ namespace WebCrawlers.EdenFresh.Logging
 
         public DataTable ReadLogsWhere(string columnName, Comparator compare, string value)
         {
-            using(SqlConnection conn = new SqlConnection(this.connectionString))
+            SqlConnection conn = null;
+            try
             {
-
+                conn = new SqlConnection(this.connectionString);
+                string query = $"Select * from Logger where {columnName} ";
+                switch (compare)
+                {
+                    case Comparator.LESS:
+                        query += "< @value";
+                        break;
+                    case Comparator.GREATER:
+                        query += "> @value";
+                        break;
+                    case Comparator.EQUAL:
+                        query += "= @value";
+                        break;
+                    case Comparator.NOT:
+                        query += "<> @value";
+                        break;
+                }
+                conn.Open();
+                SqlCommand command = new SqlCommand(query, conn);
+                command.Parameters.AddWithValue("@value", value);
+                SqlDataReader results = command.ExecuteReader();
+                DataTable table = new DataTable();
+                table.Load(results);
+                return table;
+            }
+            catch(SqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new DataTable();
+            }
+            finally
+            {
+                if(conn != null)
+                {
+                    conn.Close();
+                }
             }
         }
 
