@@ -9,15 +9,16 @@ namespace WebCrawlers.EdenFresh.UserManagement
         private UMService umService;
         private int userId;
         private Authorization authorization;
-
         ILogGateway dao;
         LogWriter writer;
-        public UMManager(int userID, UMService uMService, Authorization auth)
+
+        public UMManager(int userID, UMService uMService, Authorization auth, LogWriter logging)
         {
             this.stopwatch = new Stopwatch();
             this.umService = uMService;
             this.userId = userID;
             this.authorization = auth;
+            this.writer = logging;
         }
 
         public Boolean CreateAccount(String email, String password, Boolean isEnabled)
