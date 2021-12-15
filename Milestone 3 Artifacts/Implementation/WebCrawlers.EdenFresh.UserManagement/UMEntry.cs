@@ -19,10 +19,25 @@ namespace WebCrawlers.EdenFresh.UserManagement
             LogWriter logger = new LogWriter(logGateway);
 
             UMManager manager = new UMManager(inititatingUser, serv, authZ, logger);
-            
-            manager.DeleteAccount(132265,"ReidarDaithi@gmail.com", "password");
-            manager.UpdateAccount(670336, "NacyKasey@yahoo.com", "updatedPassword", true);
-            
+            //CreateAccounts
+            manager.CreateAccount("ThisAccountForTesting@gmail.com", "thisPasswordForTesting", true);
+            manager.CreateAccount("ThatAccountForTesting@yahoo.com", "thatPasswordForTesting", true);
+            manager.CreateAccount("TheOtherAccountForTesting@gmail.com", "theOtherPasswordForTesting", true);
+
+            //DisableAccounts
+            manager.DisableAccount(187384, "LexineArden@gmail.com", "randomPass1");
+            manager.DisableAccount(670336, "NacyKasey@yahoo.com", "updatedPassword");
+
+            //UpdateAccounts
+            manager.UpdateAccount(612184, "MilenaRosabel@gmail.com", "theOtherUpdatedPassword", true);
+            //
+
+            //Enable Accounts
+            manager.EnableAccount(187384, "LexineArden@gmail.com", "randomPass1");
+
+            //DeleteAccounts
+            manager.DeleteAccount(187384, "LexineArden@gmail.com", "randomPass1");
+
 
 
 
