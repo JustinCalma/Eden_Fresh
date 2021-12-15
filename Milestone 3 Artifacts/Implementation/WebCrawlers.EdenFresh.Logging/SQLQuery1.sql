@@ -1,0 +1,1 @@
+﻿BACKUP DATABASE logging TO DISK = 'C:\loggingDB.bak';

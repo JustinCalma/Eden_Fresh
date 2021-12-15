@@ -28,5 +28,14 @@ namespace WebCrawlers.EdenFresh.UserManagement
             stopwatch.Stop();
             return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
         }
+
+        public Boolean UpdateAccount(int userId, String email, String password, Boolean isEnabled)
+        {
+            stopwatch.Restart();
+            stopwatch.Start();
+            bool operationSuccessful = umService.UpdateAccount(userId, email, password, isEnabled);
+            stopwatch.Stop();
+            return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+        }
     }
 }
