@@ -19,7 +19,68 @@ namespace WebCrawlers.EdenFresh.UserManagement
             LogWriter logger = new LogWriter(logGateway);
 
             UMManager manager = new UMManager(inititatingUser, serv, authZ, logger);
-            
+            bool cont = true;
+
+            while(cont)
+            {
+                Console.WriteLine("Please select an action by inputing a number");
+                Console.WriteLine("1) Create Account");
+                Console.WriteLine("2) Enable Account");
+                Console.WriteLine("3) Disable Account");
+                Console.WriteLine("4) Update Account");
+                Console.WriteLine("5) Delete Account");
+                String selection = Console.ReadLine();
+                switch (selection)
+                {
+                    case "1":
+                        Console.WriteLine("Please input Email");
+                        String email0 = Console.ReadLine();
+                        Console.WriteLine("Please input password");
+                        String pass0 = Console.ReadLine();
+                        manager.CreateAccount(email0, pass0, true);
+                        break;
+                    case "2":
+                        Console.WriteLine("Please input UserId");
+                        string userId1 = Console.ReadLine();
+                        Console.WriteLine("Please input Email");
+                        String email1 = Console.ReadLine();
+                        Console.WriteLine("Please input password");
+                        String pass1 = Console.ReadLine();
+                        manager.EnableAccount((int) userId1, email1, pass1, true);
+                        break;
+                    case "3":
+                    case "4":
+                    case "5":
+                    default:
+                        Console.WriteLine("Invalid Number");
+                        break;
+                }
+                Console.WriteLine("Do you want to select another (Y\N)");
+                switch (Console.ReadLine())
+                {
+                    case "Y":
+                        break;
+                    case "y":
+                        break;
+                    case "N":
+                        Console.WriteLine("Have a nice day :)");
+                        cont = false;
+                        break;
+                    case "n":
+                        Console.WriteLine("Have a nice day :)");
+                        cont = false;
+                        break;
+                    default:
+                        Console.WriteLine("Have a nice day :)");
+                        cont = false;
+                        break;
+                }
+            }
+
+
+
+
+            /*
             //CreateAccounts
             manager.CreateAccount("ThisAccountForTesting@gmail.com", "thisPasswordForTesting", true);
             manager.CreateAccount("ThatAccountForTesting@yahoo.com", "thatPasswordForTesting", true);
@@ -38,7 +99,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
 
             //DeleteAccounts
             manager.DeleteAccount(187384, "LexineArden@gmail.com", "randomPass1");
-           
+           */
 
 
 
