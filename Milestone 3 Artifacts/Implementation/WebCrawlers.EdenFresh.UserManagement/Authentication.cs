@@ -11,7 +11,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
         public Authentication() { }
         public Boolean AuthenticateUser(int userID)
         {
-            return userID == 0;
+            return true;
         }
     }
 }
