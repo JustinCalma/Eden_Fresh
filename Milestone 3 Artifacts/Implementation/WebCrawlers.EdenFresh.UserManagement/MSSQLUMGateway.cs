@@ -14,7 +14,6 @@ namespace WebCrawlers.EdenFresh.UserManagement
         }
         public Boolean WriteToDataStore(int userId, string email, string password, bool isEnabled)
         {
-            Console.WriteLine(userId);
             int value = rnd.Next(100000, 999999);
             try
             {
@@ -36,7 +35,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 {
                     if (ex.Number == 2627)//SQL Duplicate primary key exception 
                     {
-                        Console.WriteLine("Duplicate Key...reassigning key" + userId);
+                        Console.WriteLine("Duplicate Key...reassigning key");
 
                         userId = value;
                         return false;
@@ -45,7 +44,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 finally
                 {
                     con.Close();
-                    //Console.ReadKey();
+                    Console.ReadKey();
 
                 }
 
