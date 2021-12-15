@@ -25,11 +25,13 @@ namespace WebCrawlers.EdenFresh.UserManagement
 
         public Boolean CreateAccount(String email, String password, Boolean isEnabled)
         {
+            /*
             if (!this.authorization.AuthorizeUser(this.userId))
             {
                 writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Business, $"User {this.userId} Is Unauthorized to Create Account");
                 return false;
             }
+            */
             try
             {
                 stopwatch.Restart();

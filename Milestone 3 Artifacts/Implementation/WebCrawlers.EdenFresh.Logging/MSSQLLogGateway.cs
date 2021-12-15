@@ -14,18 +14,16 @@ namespace WebCrawlers.EdenFresh.Logging
         public MSSQLLogGateway(string connection)
         {
             this.connectionString = connection;
-            logId = rnd.Next(100000, 999999);
         }
 
         public Boolean WriteLog(int userId, DateTime timeStamp, LogWriter.LogLevel logLevel, LogWriter.Category category, string message)
         {
-
-            int value = rnd.Next(100000, 999999);
             try
             {
                 SqlConnection con = new SqlConnection(connectionString);
                 string query = "INSERT INTO LOGGER (LogId, UserId, TimeDate, LogLevel, Category, Message) VALUES (@logId, @userId, @timeDate, @logLevel, @category, @message)";
                 SqlCommand cmd = new SqlCommand(query, con);
+                logId = rnd.Next(100000, 999999);
                 cmd.Parameters.AddWithValue("@logId", logId);
                 cmd.Parameters.AddWithValue("@userId", userId);
                 cmd.Parameters.AddWithValue("@timeDate", timeStamp);
@@ -44,7 +42,6 @@ namespace WebCrawlers.EdenFresh.Logging
                     if (ex.Number == 2627)//SQL Duplicate primary key exception 
                     {
                         Console.WriteLine("Duplicate Key...reassigning key");
-                        logId = value;
                         WriteLog(userId, timeStamp, logLevel, category, message);
                         return false;
                     }
