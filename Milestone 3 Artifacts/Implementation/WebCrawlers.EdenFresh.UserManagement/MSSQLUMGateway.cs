@@ -14,16 +14,15 @@ namespace WebCrawlers.EdenFresh.UserManagement
             this.connectionString = connection;
             userId = rnd.Next(100000, 999999);
         }
-        public Boolean WriteToDataStore(string username, string email, string password, bool isEnabled)
+        public Boolean WriteToDataStore(string email, string password, bool isEnabled)
         {
             int value = rnd.Next(100000, 999999);
             try
             {
                 SqlConnection con = new SqlConnection(connectionString);
-                string query = "INSERT INTO ACCOUNT(UserId, Username, Password, Email, IsEnabled) VALUES (@userId, @username, @password, @email, @isEnabled)";
+                string query = "INSERT INTO ACCOUNT(UserId, Password, Email, IsEnabled) VALUES (@userId, @password, @email, @isEnabled)";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@userId", userId);
-                cmd.Parameters.AddWithValue("@username", username);
                 cmd.Parameters.AddWithValue("@password", password);
                 cmd.Parameters.AddWithValue("@email", email);
                 cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
@@ -59,12 +58,43 @@ namespace WebCrawlers.EdenFresh.UserManagement
             }
         }
 
-        public bool DeleteFromDataStore(string userID, string email, string password, bool isEnabled)
+        public Boolean DeleteFromDataStore(int userID, string email, string password, bool isEnabled)
         {
-            throw new NotImplementedException();
+            try
+            {
+                SqlConnection con = new SqlConnection(connectionString);
+
+                string query = "DELETE FROM ACCOUNT WHERE UserId = @userId";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@userId", userId);
+
+                try
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine("Account Log Records Deleted Successfully");
+                    return true;
+
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("MSSQLUMGateway class Error: " + ex.ToString());
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                    Console.ReadKey();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
 
-        public bool UpdateDataStore(string userID, string email, string password, bool isEnabled)
+        public bool UpdateDataStore(int userID, string email, string password, bool isEnabled)
         {
             throw new NotImplementedException();
         }

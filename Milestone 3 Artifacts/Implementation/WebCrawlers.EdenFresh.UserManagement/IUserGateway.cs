@@ -4,8 +4,8 @@ namespace WebCrawlers.EdenFresh.UserManagement
 {
     interface IUserGateway
     {
-    	public Boolean WriteToDataStore(string userID, string email, string password, bool isEnabled);
-    	public Boolean UpdateDataStore(string userID, string email, string password, bool isEnabled);
-    	public Boolean DeleteFromDataStore(string userID, string email, string password, bool isEnabled);
+    	public Boolean WriteToDataStore(string email, string password, bool isEnabled);
+    	public Boolean UpdateDataStore(int userID, string email, string password, bool isEnabled);
+    	public Boolean DeleteFromDataStore(int userID, string email, string password, bool isEnabled);
     }
 }

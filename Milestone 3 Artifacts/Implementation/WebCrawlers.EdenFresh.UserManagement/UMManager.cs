@@ -12,19 +12,19 @@ namespace WebCrawlers.EdenFresh.UserManagement
             umService = new UMService(connectionString);
         }
 
-        public Boolean CreateAccount(String username, String email, String password, Boolean isEnabled)
+        public Boolean CreateAccount(String email, String password, Boolean isEnabled)
         {
             stopwatch.Restart();
             stopwatch.Start();
-            bool operationSuccessful = umService.CreateAccount(username, email, password,isEnabled);
+            bool operationSuccessful = umService.CreateAccount(email, password,isEnabled);
             stopwatch.Stop();
             return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
         }
-        public Boolean DeleteAccount(String username, String email, String password)
+        public Boolean DeleteAccount(int userId, String email, String password, Boolean isEnabled)
         {
             stopwatch.Restart();
             stopwatch.Start();
-            bool operationSuccessful = umService.DeleteAccount(username, email, password);
+            bool operationSuccessful = umService.DeleteAccount(userId, email, password, isEnabled);
             stopwatch.Stop();
             return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
         }

@@ -15,14 +15,14 @@ namespace WebCrawlers.EdenFresh.UserManagement
         {
             umDao = new MSSQLUMGateway(conectionString);
         }
-        public Boolean CreateAccount(String userName, String email, String password, Boolean isEnabled)
+        public Boolean CreateAccount(String email, String password, Boolean isEnabled)
         {
-            return umDao.WriteToDataStore(userName, email, password, isEnabled);
+            return umDao.WriteToDataStore(email, password, isEnabled);
         }
 
-        public Boolean DeleteAccount(String username, String email, String password)
+        public Boolean DeleteAccount(int userId, String email, String password, Boolean isEnabled)
         {
-            return umDao.DeleteFromDataStore(username, email, password);
+            return umDao.DeleteFromDataStore(userId, email, password, isEnabled);
         }
     }
 }
