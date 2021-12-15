@@ -46,7 +46,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 return false;
             }
         }
-        public Boolean DeleteAccount(int userId, String email, String password, Boolean isEnabled)
+        public Boolean DeleteAccount(int userId, String email, String password)
         {
             if (!this.authorization.AuthorizeUser(this.userId))
             {
@@ -57,7 +57,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
             {
                 stopwatch.Restart();
                 stopwatch.Start();
-                bool operationSuccessful = umService.DeleteAccount(userId, email, password, isEnabled);
+                bool operationSuccessful = umService.DeleteAccount(userId, email, password);
                 stopwatch.Stop();
                 writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, "Deleting User Account");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
