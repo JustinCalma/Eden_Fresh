@@ -19,91 +19,38 @@ namespace WebCrawlers.EdenFresh.UserManagement
             LogWriter logger = new LogWriter(logGateway);
 
             UMManager manager = new UMManager(inititatingUser, serv, authZ, logger);
-            bool cont = true;
 
-            while(cont)
-            {
+
                 Console.WriteLine("Please select an action by inputing a number");
-                Console.WriteLine("1) Create Account");
-                Console.WriteLine("2) Enable Account");
-                Console.WriteLine("3) Disable Account");
-                Console.WriteLine("4) Update Account");
-                Console.WriteLine("5) Delete Account");
+                Console.WriteLine("1) Create Account w/ USERNAME: ThisAccountForTesting@gmail.com PASSWORD: thisPasswordForTesting");
+                Console.WriteLine("2) Enable Account w/ USERID:576148 USERNAME: GeirFederica@hotmail.com PASSWORD: random");
+                Console.WriteLine("3) Disable Account w/ USERID:670336 USERNAME: NacyKasey@yahoo.com PASSWORD: updatedPassword");
+                Console.WriteLine("4) Update Account w/ USERID:612184 USERNAME:MilenaRosabel@gmail.com PASSWORD: theOtherUpdatedPassword ");
+                Console.WriteLine("5) Delete Account w/ USERID:187384 USERNAME: LexineArden@gmail.com PASSWORD: randomPass1");
                 String selection = Console.ReadLine();
                 switch (selection)
                 {
                     case "1":
-                        Console.WriteLine("Please input Email");
-                        String email0 = Console.ReadLine();
-                        Console.WriteLine("Please input password");
-                        String pass0 = Console.ReadLine();
-                        manager.CreateAccount(email0, pass0, true);
+                        manager.CreateAccount("ThisAccountForTesting@gmail.com", "thisPasswordForTesting", true);
                         break;
                     case "2":
-                        Console.WriteLine("Please input UserId");
-                        string userId1 = Console.ReadLine();
-                        Console.WriteLine("Please input Email");
-                        String email1 = Console.ReadLine();
-                        Console.WriteLine("Please input password");
-                        String pass1 = Console.ReadLine();
-                        manager.EnableAccount((int) userId1, email1, pass1, true);
+                        manager.EnableAccount(576148, "GeirFederica@hotmail.com", "random"  );
                         break;
                     case "3":
-                        Console.WriteLine("Please input UserId");
-                        string userId2 = Console.ReadLine();
-                        Console.WriteLine("Please input Email");
-                        String email2 = Console.ReadLine();
-                        Console.WriteLine("Please input password");
-                        String pass2 = Console.ReadLine();
-                        manager.DisableAccount((int)userId2, email2, pass2, false);
+                        manager.DisableAccount(670336, "NacyKasey@yahoo.com", "updatedPassword");
                         break;
                     case "4":
-                        Console.WriteLine("Please input UserId");
-                        string userId3 = Console.ReadLine();
-                        Console.WriteLine("Please input Email");
-                        String email3 = Console.ReadLine();
-                        Console.WriteLine("Please input password");
-                        String pass3 = Console.ReadLine();
-                        Console.WriteLine("Is Account going to be enabled?(true/false)");
-                        String enable3 = Console.ReadLine();
-                        manager.UpdateAccount((int)userId3, email3, pass3, Convert.ToBoolean(enable3));
+                        manager.UpdateAccount(612184, "MilenaRosabel@gmail.com", "theOtherUpdatedPassword", true);
                         break;
                     case "5":
-                        Console.WriteLine("Please input UserId");
-                        string userId4 = Console.ReadLine();
-                        Console.WriteLine("Please input Email");
-                        String email4 = Console.ReadLine();
-                        Console.WriteLine("Please input password");
-                        String pass4 = Console.ReadLine();
-                        Console.WriteLine("Is Account going to be enabled?(true/false)");
-                        String enable4 = Console.ReadLine();
-                        manager.DeleteAccount((int)userId4, email4, pass4);
+                        manager.DeleteAccount(187384, "LexineArden@gmail.com", "randomPass1");
                         break;
                     default:
                         Console.WriteLine("Invalid Number");
                         break;
                 }
-                Console.WriteLine("Do you want to select another (Y\N)");
-                switch (Console.ReadLine())
-                {
-                    case "Y":
-                        break;
-                    case "y":
-                        break;
-                    case "N":
-                        Console.WriteLine("Have a nice day :)");
-                        cont = false;
-                        break;
-                    case "n":
-                        Console.WriteLine("Have a nice day :)");
-                        cont = false;
-                        break;
-                    default:
-                        Console.WriteLine("Have a nice day :)");
-                        cont = false;
-                        break;
-                }
-            }
+                Console.WriteLine("Have a nice day :)");
+           
 
 
 
