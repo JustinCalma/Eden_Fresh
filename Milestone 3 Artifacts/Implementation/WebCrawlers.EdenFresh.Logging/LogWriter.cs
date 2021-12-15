@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
-    class LogWriter
+    public class LogWriter
     {
         public enum LogLevel { Info, Debug, Warning, Error }
         public enum Category { View, Business, Server, Data, DataStore }

@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace WebCrawlers.EdenFresh.Logging
 {
-    class MSSQLLogGateway : ILogGateway
+    public class MSSQLLogGateway : ILogGateway
     {
         private string connectionString;
         private int logId;
