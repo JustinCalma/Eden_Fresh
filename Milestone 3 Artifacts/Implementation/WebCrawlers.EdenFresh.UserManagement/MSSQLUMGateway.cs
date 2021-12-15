@@ -58,13 +58,13 @@ namespace WebCrawlers.EdenFresh.UserManagement
             }
         }
 
-        public Boolean DeleteFromDataStore(int userID, string email, string password, bool isEnabled)
+        public Boolean DeleteFromDataStore(int userId, string email, string password, bool isEnabled)
         {
             try
             {
                 SqlConnection con = new SqlConnection(connectionString);
 
-                string query = "DELETE FROM ACCOUNT WHERE UserId = @userId";
+                string query = "DELETE FROM Account WHERE UserId = @userId";
                 SqlCommand cmd = new SqlCommand(query, con);
                 cmd.Parameters.AddWithValue("@userId", userId);
 
@@ -94,9 +94,44 @@ namespace WebCrawlers.EdenFresh.UserManagement
             }
         }
 
-        public bool UpdateDataStore(int userID, string email, string password, bool isEnabled)
+        public bool UpdateDataStore(int userId, string email, string password, bool isEnabled)
         {
-            throw new NotImplementedException();
+            try
+            {
+                SqlConnection con = new SqlConnection(connectionString);
+
+                string query = "UPDATE ACCOUNT SET Email = @email, Password = @password, IsEnabled = @isEnabled WHERE userId = @userId";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@password", password);
+                cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
+
+                try
+                {
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    Console.WriteLine("User Records Updated Successfully");
+                    return true;
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("MSSQLUMGateway class Error: " + ex.ToString());
+                    return false;
+                }
+                finally
+                {
+                    con.Close();
+                    Console.ReadKey();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UserRepo class Error:" + ex.Message);
+                return false;
+            }
         }
+
     }
 }
+
