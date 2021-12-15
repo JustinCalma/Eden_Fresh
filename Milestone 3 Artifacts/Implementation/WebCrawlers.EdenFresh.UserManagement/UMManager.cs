@@ -35,6 +35,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
             catch (Exception ex)
             {
                 writer.Write(userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, "Error In Creating New User Account");
+                Console.WriteLine(ex.ToString());
                 return false;
             }
         }
@@ -46,39 +47,72 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.DeleteAccount(userId, email, password, isEnabled);
                 stopwatch.Stop();
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, "Deleting User Account");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
             {
+                writer.Write(userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, "Error In Deleting New User Account");
+                Console.WriteLine(ex.ToString());
                 return false;
             }
         }
 
         public Boolean UpdateAccount(int userId, String email, String password, Boolean isEnabled)
         {
-            stopwatch.Restart();
-            stopwatch.Start();
-            bool operationSuccessful = umService.UpdateAccount(userId, email, password, isEnabled);
-            stopwatch.Stop();
-            return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            try
+            {
+                stopwatch.Restart();
+                stopwatch.Start();
+                bool operationSuccessful = umService.UpdateAccount(userId, email, password, isEnabled);
+                stopwatch.Stop();
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Updating User Account");
+                return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            }
+            catch (Exception ex)
+            {
+                writer.Write(userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Updating User Account");
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         public Boolean EnableAccount(int userId, String email, String password)
         {
-            stopwatch.Restart();
-            stopwatch.Start();
-            bool operationSuccessful = umService.UpdateAccount(userId, email, password, true);
-            stopwatch.Stop();
-            return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            try
+            {
+                stopwatch.Restart();
+                stopwatch.Start();
+                bool operationSuccessful = umService.UpdateAccount(userId, email, password, true);
+                stopwatch.Stop();
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Enabling User Account");
+                return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            }
+            catch(Exception ex)
+            {
+                writer.Write(userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Enabling User Account");
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
 
         public Boolean DisableAccount(int userId, String email, String password)
         {
-            stopwatch.Restart();
-            stopwatch.Start();
-            bool operationSuccessful = umService.UpdateAccount(userId, email, password, false);
-            stopwatch.Stop();
-            return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            try
+            {
+                stopwatch.Restart();
+                stopwatch.Start();
+                bool operationSuccessful = umService.UpdateAccount(userId, email, password, false);
+                stopwatch.Stop();
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Disable User Account");
+                return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
+            }
+            catch(Exception ex)
+            {
+                writer.Write(userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Disabling User Account");
+                Console.WriteLine(ex.ToString());
+                return false;
+            }
         }
     }
 }
