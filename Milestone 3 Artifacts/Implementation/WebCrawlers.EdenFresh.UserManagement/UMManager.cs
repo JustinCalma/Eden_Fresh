@@ -110,7 +110,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.UpdateAccount(userId, email, password, true);
                 stopwatch.Stop();
-                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Enabled User Account with ID {userId}");
+                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Enabled User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
@@ -134,7 +134,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.UpdateAccount(userId, email, password, false);
                 stopwatch.Stop();
-                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Disabled User Account with ID {userId}");
+                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Disabled User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
