@@ -19,17 +19,8 @@ namespace WebCrawlers.EdenFresh.UserManagement
             LogWriter logger = new LogWriter(logGateway);
 
             UMManager manager = new UMManager(inititatingUser, serv, authZ, logger);
-            manager.CreateAccount("ReidarDaithi@gmail.com", "password", true);
-            manager.CreateAccount("NacyKasey@yahoo.com", "123456", true);
-            manager.CreateAccount("LexineArden@gmail.com", "randomPass1", true);
-            manager.CreateAccount("GeirFederica@hotmail.com", "random", true);
-            manager.CreateAccount("MilenaRosabel@gmail.com", "ran", true);
-            manager.CreateAccount("GobnetSapphire@gmail.com", "pass", true);
-            manager.CreateAccount("BobTheBuilder@yahoo.com", "thisPassword", true);
-            manager.CreateAccount("NatureCat@gmail.com", "thatPassword", true);
-            manager.CreateAccount("CuroiousGeorge@gmail.com", "theOtherPassword", true);
-            manager.CreateAccount("ReadyJetGo@gmail.com", "morePassword", true);
-            manager.CreateAccount("CliffordTheBigRedDog@gmail.com", "testPassword", true);
+            manager.DeleteAccount(750239, "GobnetSapphire@gmail.com",    "pass"    );
+
 
         }
 
@@ -72,5 +63,22 @@ namespace WebCrawlers.EdenFresh.UserManagement
             // enable a disabled account
             manager.EnableAccount(267842, "email", "password");
         }
+
+        /*
+        static void createUserTester()
+        {
+            manager.CreateAccount("ReidarDaithi@gmail.com", "password", true);
+            manager.CreateAccount("NacyKasey@yahoo.com", "123456", true);
+            manager.CreateAccount("LexineArden@gmail.com", "randomPass1", true);
+            manager.CreateAccount("GeirFederica@hotmail.com", "random", true);
+            manager.CreateAccount("MilenaRosabel@gmail.com", "ran", true);
+            manager.CreateAccount("GobnetSapphire@gmail.com", "pass", true);
+            manager.CreateAccount("BobTheBuilder@yahoo.com", "thisPassword", true);
+            manager.CreateAccount("NatureCat@gmail.com", "thatPassword", true);
+            manager.CreateAccount("CuroiousGeorge@gmail.com", "theOtherPassword", true);
+            manager.CreateAccount("ReadyJetGo@gmail.com", "morePassword", true);
+            manager.CreateAccount("CliffordTheBigRedDog@gmail.com", "testPassword", true);
+        }
+        */
     }
 }
