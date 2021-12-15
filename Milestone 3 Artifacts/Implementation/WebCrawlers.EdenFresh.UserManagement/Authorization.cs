@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/*
 namespace WebCrawlers.EdenFresh.UserManagement
 {
     public class Authorization
@@ -13,13 +12,12 @@ namespace WebCrawlers.EdenFresh.UserManagement
 
         public Authorization(Authentication umAuthen)
         {
-            this.umAuthentication = umAuthen;
+            this.umAuthen = umAuthen;
         }
 
-        public Boolean AuthorizeUser(string userId)
+        public Boolean AuthorizeUser(int userId)
         {
-            return this.umAuthen.AuthenthicateUser(userId);
+            return this.umAuthen.AuthenticateUser(userId);
         }
     }
 }
-*/
