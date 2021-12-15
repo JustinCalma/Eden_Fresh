@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace WebCrawlers.EdenFresh.UserManagement
 {
-    internal class bool AuthenticationUser(string userID)
+    public class Authentication
     {
-        bool truth = true;
+        public Authentication() { }
+        public Boolean AuthenticateUser(String userID)
+        {
+            bool truth = true;
 
-        userID = userID.ToLower();
-        if (string.IsNullOrEmpty(userID)) { return false; }
-
-        return truth;
-
-
+            userID = userID.ToLower();
+            if (string.IsNullOrEmpty(userID)) { return false; }
+            return truth;
+        }
     }
 }
