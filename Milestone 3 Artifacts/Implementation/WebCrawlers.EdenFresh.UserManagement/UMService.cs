@@ -15,9 +15,9 @@ namespace WebCrawlers.EdenFresh.UserManagement
         {
             umDao = new MSSQLUMGateway(conectionString);
         }
-        public Boolean CreateAccount(String email, String password, Boolean isEnabled)
+        public Boolean CreateAccount(int userId, String email, String password, Boolean isEnabled)
         {
-            return umDao.WriteToDataStore(email, password, isEnabled);
+            return umDao.WriteToDataStore(userId, email, password, isEnabled);
         }
 
         public Boolean DeleteAccount(int userId, String email, String password, Boolean isEnabled)

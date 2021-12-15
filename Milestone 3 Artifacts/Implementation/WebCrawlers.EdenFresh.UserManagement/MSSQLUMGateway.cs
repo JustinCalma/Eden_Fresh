@@ -6,15 +6,13 @@ namespace WebCrawlers.EdenFresh.UserManagement
     class MSSQLUMGateway : IUserGateway
     {
         private string connectionString;
-        private int userId;
         private Random rnd = new Random();
 
         public MSSQLUMGateway(string connection)
         {
             this.connectionString = connection;
-            userId = rnd.Next(100000, 999999);
         }
-        public Boolean WriteToDataStore(string email, string password, bool isEnabled)
+        public Boolean WriteToDataStore(int userId, string email, string password, bool isEnabled)
         {
             int value = rnd.Next(100000, 999999);
             try
