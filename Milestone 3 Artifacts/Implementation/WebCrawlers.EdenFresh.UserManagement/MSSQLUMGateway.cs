@@ -56,7 +56,7 @@ namespace WebCrawlers.EdenFresh.UserManagement
             }
         }
 
-        public Boolean DeleteFromDataStore(int userId, string email, string password, bool isEnabled)
+        public Boolean DeleteFromDataStore(int userId, string email, string password)
         {
             try
             {

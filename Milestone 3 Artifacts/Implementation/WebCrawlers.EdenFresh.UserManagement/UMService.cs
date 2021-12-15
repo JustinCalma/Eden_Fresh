@@ -19,9 +19,9 @@ namespace WebCrawlers.EdenFresh.UserManagement
             return umDao.WriteToDataStore(userId, email, password, isEnabled);
         }
 
-        public Boolean DeleteAccount(int userId, String email, String password, Boolean isEnabled)
+        public Boolean DeleteAccount(int userId, String email, String password)
         {
-            return umDao.DeleteFromDataStore(userId, email, password, isEnabled);
+            return umDao.DeleteFromDataStore(userId, email, password);
         }
 
         public Boolean UpdateAccount(int userId, String email, String password, Boolean isEnabled)
