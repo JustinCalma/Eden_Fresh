@@ -71,9 +71,17 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 try
                 {
                     con.Open();
-                    cmd.ExecuteNonQuery();
-                    Console.WriteLine("Account Log Records Deleted Successfully");
-                    return true;
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        Console.WriteLine("Account Log Records Deleted Successfully");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cannot find data");
+                        return true;
+                    }
 
                 }
                 catch (SqlException ex)
@@ -110,9 +118,17 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 try
                 {
                     con.Open();
-                    cmd.ExecuteNonQuery();
-                    Console.WriteLine("User Records Updated Successfully");
-                    return true;
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        Console.WriteLine("User Records Updated Successfully");
+                        return true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unable to find user to update data");
+                        return true;
+                    }
                 }
                 catch (SqlException ex)
                 {
