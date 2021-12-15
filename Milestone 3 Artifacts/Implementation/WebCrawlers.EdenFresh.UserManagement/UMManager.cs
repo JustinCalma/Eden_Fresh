@@ -34,14 +34,15 @@ namespace WebCrawlers.EdenFresh.UserManagement
             {
                 stopwatch.Restart();
                 stopwatch.Start();
-                bool operationSuccessful = umService.CreateAccount(this.rnd.Next(100000, 999999), email, password, isEnabled);
+                int newID = this.rnd.Next(100000, 999999);
+                bool operationSuccessful = umService.CreateAccount(newID, email, password, isEnabled);
                 stopwatch.Stop();
-                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, "Creating New User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, $"User {this.userId} Created New User Account With ID {newID}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch (Exception ex)
             {
-                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, "Error In Creating New User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, $"User {this.userId} had an Error In Creating New User Account");
                 Console.WriteLine(ex.ToString());
                 return false;
             }
@@ -59,12 +60,12 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.DeleteAccount(userId, email, password);
                 stopwatch.Stop();
-                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, "Deleting User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.DataStore, $"User {this.userId} Deleted User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
             {
-                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, "Error In Deleting New User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.DataStore, $"User {this.userId} had an Error In Deleting User Account");
                 Console.WriteLine(ex.ToString());
                 return false;
             }
@@ -83,12 +84,12 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.UpdateAccount(userId, email, password, isEnabled);
                 stopwatch.Stop();
-                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Updating User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Updated User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch (Exception ex)
             {
-                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Updating User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, $"User {this.userId} had an Error In Updating User Account");
                 Console.WriteLine(ex.ToString());
                 return false;
             }
@@ -107,12 +108,12 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.UpdateAccount(userId, email, password, true);
                 stopwatch.Stop();
-                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Enabling User Account");
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Enabled User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
             {
-                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Enabling User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, $"User {this.userId} had an Error In Enabling User Account");
                 Console.WriteLine(ex.ToString());
                 return false;
             }
@@ -131,12 +132,12 @@ namespace WebCrawlers.EdenFresh.UserManagement
                 stopwatch.Start();
                 bool operationSuccessful = umService.UpdateAccount(userId, email, password, false);
                 stopwatch.Stop();
-                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, "Disable User Account");
+                writer.Write(userId, LogWriter.LogLevel.Info, LogWriter.Category.Data, $"User {this.userId} Disabled User Account with ID {userId}");
                 return (operationSuccessful && stopwatch.ElapsedMilliseconds <= 5000);
             }
             catch(Exception ex)
             {
-                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, "Error In Disabling User Account");
+                writer.Write(this.userId, LogWriter.LogLevel.Error, LogWriter.Category.Data, $"User {this.userId} had an Error In Disabling User Account");
                 Console.WriteLine(ex.ToString());
                 return false;
             }
