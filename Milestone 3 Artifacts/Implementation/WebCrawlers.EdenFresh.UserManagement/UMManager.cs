@@ -7,18 +7,17 @@ namespace WebCrawlers.EdenFresh.UserManagement
     {
         private Stopwatch stopwatch;
         private UMService umService;
-        private Random rnd = new Random();
-        private int userId; 
+        private int userId;
+        private Authorization authorization;
 
         ILogGateway dao;
         LogWriter writer;
-        public UMManager(String connectionString)
+        public UMManager(int userID, UMService uMService, Authorization auth)
         {
             this.stopwatch = new Stopwatch();
-            umService = new UMService(connectionString);
-            dao = new MSSQLLogGateway(connectionString);
-            writer = new LogWriter(dao);
-            userId = rnd.Next(100000, 999999);
+            this.umService = uMService;
+            this.userId = userID;
+            this.authorization = auth;
         }
 
         public Boolean CreateAccount(String email, String password, Boolean isEnabled)
