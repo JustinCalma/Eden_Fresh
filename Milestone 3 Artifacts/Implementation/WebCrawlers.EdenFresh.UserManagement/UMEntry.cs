@@ -49,8 +49,36 @@ namespace WebCrawlers.EdenFresh.UserManagement
                         manager.EnableAccount((int) userId1, email1, pass1, true);
                         break;
                     case "3":
+                        Console.WriteLine("Please input UserId");
+                        string userId2 = Console.ReadLine();
+                        Console.WriteLine("Please input Email");
+                        String email2 = Console.ReadLine();
+                        Console.WriteLine("Please input password");
+                        String pass2 = Console.ReadLine();
+                        manager.DisableAccount((int)userId2, email2, pass2, false);
+                        break;
                     case "4":
+                        Console.WriteLine("Please input UserId");
+                        string userId3 = Console.ReadLine();
+                        Console.WriteLine("Please input Email");
+                        String email3 = Console.ReadLine();
+                        Console.WriteLine("Please input password");
+                        String pass3 = Console.ReadLine();
+                        Console.WriteLine("Is Account going to be enabled?(true/false)");
+                        String enable3 = Console.ReadLine();
+                        manager.UpdateAccount((int)userId3, email3, pass3, Convert.ToBoolean(enable3));
+                        break;
                     case "5":
+                        Console.WriteLine("Please input UserId");
+                        string userId4 = Console.ReadLine();
+                        Console.WriteLine("Please input Email");
+                        String email4 = Console.ReadLine();
+                        Console.WriteLine("Please input password");
+                        String pass4 = Console.ReadLine();
+                        Console.WriteLine("Is Account going to be enabled?(true/false)");
+                        String enable4 = Console.ReadLine();
+                        manager.DeleteAccount((int)userId4, email4, pass4);
+                        break;
                     default:
                         Console.WriteLine("Invalid Number");
                         break;
