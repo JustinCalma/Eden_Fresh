@@ -8,12 +8,11 @@ namespace WebCrawlers.EdenFresh.UserManagement
 {
     class UMService
     {
-        private String connectionString;
-        MSSQLUMGateway umDao;
+        IUserGateway umDao;
 
-        public UMService(String conectionString)
+        public UMService(IUserGateway gateway)
         {
-            umDao = new MSSQLUMGateway(conectionString);
+            umDao = gateway;
         }
         public Boolean CreateAccount(int userId, String email, String password, Boolean isEnabled)
         {
